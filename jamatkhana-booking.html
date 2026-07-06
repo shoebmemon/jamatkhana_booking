@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jamat Khana Booking</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#F7F3E8;
+  --surface:#FFFFFF;
+  --ink:#1B2E2C;
+  --ink-soft:#5B6C67;
+  --teal:#0F4C4C;
+  --teal-dark:#0A3535;
+  --gold:#C89B3C;
+  --gold-soft:#F1E3B9;
+  --gold-mid:#E8CE8C;
+  --gold-line:#E1C783;
+  --rose:#A3453A;
+  --rose-soft:#F1D9D3;
+  --green:#3F6B4C;
+  --green-soft:#DCE7DC;
+  --line:#E6DEC7;
+  --shadow: 0 10px 30px rgba(15,40,40,0.10);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Work Sans', sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+.app{ max-width:960px; margin:0 auto; padding:clamp(16px,4vw,36px); }
+
+/* ---------- Header ---------- */
+.header{
+  position:relative;
+  background:linear-gradient(160deg,var(--teal) 0%, var(--teal-dark) 100%);
+  border-radius:18px;
+  padding:clamp(20px,4vw,32px) clamp(20px,5vw,36px);
+  color:#F7F3E8; overflow:hidden; box-shadow:var(--shadow);
+}
+.header::before{
+  content:""; position:absolute; inset:0;
+  background-image: var(--star-pattern);
+  background-size: 84px 84px; opacity:0.14; pointer-events:none;
+}
+.header-inner{position:relative; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+.mark{ width:42px; height:42px; flex:none; color:var(--gold); }
+.titles{flex:1; min-width:180px;}
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--gold); opacity:0.9; margin:0 0 4px;
+}
+h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; font-weight:400; letter-spacing:0.01em; }
+.subtitle{margin:6px 0 0; font-size:13.5px; color:#D9E3DE; opacity:0.85;}
+
+.header-actions{position:relative; display:flex; gap:8px; flex-wrap:wrap;}
+.icon-btn{
+  display:flex; align-items:center; gap:7px;
+  font-family:'Work Sans', sans-serif; font-weight:600; font-size:13px;
+  padding:9px 14px; border-radius:10px; border:1px solid rgba(247,243,232,0.28);
+  background:rgba(247,243,232,0.1); color:#F1EDE0; cursor:pointer;
+}
+.icon-btn:hover{background:rgba(247,243,232,0.2);}
+
+.floor-row{ display:flex; gap:8px; margin-top:22px; flex-wrap:wrap; position:relative; }
+.floor-tab{
+  font-family:'Work Sans', sans-serif; font-weight:600; font-size:13.5px;
+  padding:9px 16px; border-radius:999px; border:1px solid rgba(247,243,232,0.25);
+  background:rgba(247,243,232,0.08); color:#EDE7D4; cursor:pointer;
+  display:flex; align-items:center; gap:7px;
+  transition:background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.floor-tab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.6;}
+.floor-tab:hover{background:rgba(247,243,232,0.16);}
+.floor-tab.active{ background:var(--gold); color:var(--teal-dark); border-color:var(--gold); }
+
+/* ---------- Card / Calendar ---------- */
+.card{
+  background:var(--surface); border-radius:18px; margin-top:18px;
+  padding:clamp(16px,3vw,28px); box-shadow:var(--shadow); border:1px solid var(--line);
+}
+.cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:10px; flex-wrap:wrap; }
+.month-label{ font-family:'Marcellus', serif; font-size:20px; color:var(--teal-dark); }
+.nav-group{display:flex; align-items:center; gap:6px;}
+.nav-btn{
+  width:34px; height:34px; border-radius:10px; border:1px solid var(--line); background:var(--bg);
+  color:var(--teal-dark); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s ease;
+}
+.nav-btn:hover{background:var(--gold-soft);}
+.today-btn{
+  font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.05em; text-transform:uppercase;
+  border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); border-radius:10px; padding:0 12px;
+  height:34px; cursor:pointer;
+}
+.today-btn:hover{color:var(--teal-dark); border-color:var(--gold);}
+
+/* Month summary strip */
+.summary-strip{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px;
+}
+.summary-cell{
+  background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+}
+.summary-cell .num{ font-family:'IBM Plex Mono', monospace; font-size:16px; font-weight:600; color:var(--teal-dark); }
+.summary-cell .lbl{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-top:2px; }
+
+.weekdays{
+  display:grid; grid-template-columns:repeat(7,1fr); font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px;
+}
+.weekdays > div{text-align:center; padding:4px 0;}
+
+.grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.day{
+  position:relative; aspect-ratio:1/1; border-radius:12px; border:1px solid var(--line); background:var(--bg);
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start;
+  padding:6px 6px 4px; cursor:pointer; transition:transform 0.1s ease, box-shadow 0.15s ease; overflow:hidden;
+}
+.day:hover{transform:translateY(-1px); box-shadow:0 4px 10px rgba(15,40,40,0.10);}
+.day.muted{opacity:0.35; cursor:default;}
+.day.muted:hover{transform:none; box-shadow:none;}
+.day .num{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft); }
+.day.is-today .num{ color:var(--teal-dark); font-weight:600; background:var(--gold-soft); border-radius:6px; padding:0 5px; }
+.day.partial{ background:var(--gold-soft); border-color:var(--gold-line); }
+.day.full-booked{ background:var(--gold-mid); border-color:var(--gold); }
+.day.is-booked .num{color:var(--teal-dark); font-weight:600;}
+.day.released{ background:var(--green-soft); border-color:#BFD2C0; }
+.day .name{
+  margin-top:auto; font-size:10px; font-weight:600; color:var(--teal-dark);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
+}
+.day .status-dot{ position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--rose); }
+.day.released .status-dot{background:var(--green);}
+.day .count-badge{
+  position:absolute; top:5px; left:6px; font-family:'IBM Plex Mono', monospace;
+  font-size:9px; color:var(--teal-dark); opacity:0.7;
+}
+
+.legend{ display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; font-size:12px; color:var(--ink-soft); }
+.legend-item{display:flex; align-items:center; gap:6px;}
+.swatch{width:12px; height:12px; border-radius:4px; border:1px solid var(--line);}
+.swatch.available{background:var(--bg);}
+.swatch.partial{background:var(--gold-soft); border-color:var(--gold-line);}
+.swatch.full{background:var(--gold-mid); border-color:var(--gold);}
+.swatch.released{background:var(--green-soft); border-color:#BFD2C0;}
+
+/* ---------- Overlay / Modal (shared) ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(10,25,25,0.45); display:none;
+  align-items:center; justify-content:center; padding:18px; z-index:50;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--surface); border-radius:16px; max-width:480px; width:100%;
+  max-height:88vh; overflow-y:auto; padding:24px 24px 20px; box-shadow:0 24px 60px rgba(10,25,25,0.35);
+}
+.modal.wide{max-width:600px;}
+.modal-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:4px;}
+.modal-date{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 2px; }
+.modal-title{font-family:'Marcellus', serif; font-size:19px; color:var(--teal-dark); margin:0;}
+.close-btn{ background:none; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer; line-height:1; padding:2px 4px; }
+.close-btn:hover{color:var(--ink);}
+
+.field{margin-top:14px;}
+.field label{ display:block; font-size:11.5px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px; }
+.field input, .field textarea, .field select{
+  width:100%; font-family:'Work Sans', sans-serif; font-size:14px; border:1px solid var(--line);
+  border-radius:9px; padding:9px 11px; background:var(--bg); color:var(--ink); resize:vertical;
+}
+.field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--gold); background:#fff; }
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+
+.slot-choice{display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;}
+.slot-opt{
+  flex:1; min-width:100px; text-align:center; padding:10px 8px; border-radius:10px; border:1px solid var(--line);
+  background:var(--bg); font-size:12.5px; font-weight:600; cursor:pointer; color:var(--ink-soft);
+}
+.slot-opt.selected{ border-color:var(--gold); background:var(--gold-soft); color:var(--teal-dark); }
+.slot-opt.disabled{ opacity:0.4; cursor:not-allowed; text-decoration:line-through; }
+
+.booking-card{
+  border:1px solid var(--line); border-radius:12px; padding:12px 13px; margin-top:12px; background:var(--bg);
+}
+.bc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+.bc-slot{
+  font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
+  background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px 9px; color:var(--teal-dark);
+}
+.bc-name{font-family:'Marcellus', serif; font-size:16px; color:var(--teal-dark); margin:6px 0 2px;}
+.bc-event{font-size:12.5px; color:var(--ink-soft);}
+.bc-pill{
+  font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
+  padding:3px 9px; border-radius:999px; white-space:nowrap;
+}
+.bc-pill.pending{background:var(--gold-soft); color:#7A5B14; border:1px solid var(--gold-line);}
+.bc-pill.released{background:var(--green-soft); color:var(--green); border:1px solid #BFD2C0;}
+.bc-rows{margin-top:8px;}
+.bc-row{display:flex; justify-content:space-between; font-size:12.5px; padding:4px 0; border-bottom:1px solid var(--line);}
+.bc-row:last-child{border-bottom:none;}
+.bc-row .k{color:var(--ink-soft);}
+.bc-row .v{font-weight:600; text-align:right;}
+.bc-row .v.mono{font-family:'IBM Plex Mono', monospace; font-weight:500;}
+.bc-row a{color:var(--teal); text-decoration:none;}
+.bc-row a:hover{text-decoration:underline;}
+.bc-actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;}
+
+.btn{
+  font-family:'Work Sans', sans-serif; font-weight:600; font-size:13px;
+  padding:8px 13px; border-radius:9px; border:1px solid transparent; cursor:pointer; text-align:center;
+}
+.btn.block{display:block; width:100%; margin-top:14px; padding:11px 14px; font-size:13.5px;}
+.btn.primary{background:var(--teal); color:#fff;}
+.btn.primary:hover{background:var(--teal-dark);}
+.btn.ghost{background:var(--surface); color:var(--ink); border-color:var(--line);}
+.btn.ghost:hover{border-color:var(--gold);}
+.btn.danger{background:var(--rose-soft); color:var(--rose);}
+.btn.danger:hover{background:#E9C4BC;}
+.btn.release{background:var(--green-soft); color:var(--green);}
+.btn.release:hover{background:#CBDECB;}
+.btn.add{background:var(--gold-soft); color:#7A5B14; border-color:var(--gold-line);}
+.btn.add:hover{background:var(--gold-mid);}
+
+.hint{font-size:12px; color:var(--ink-soft); margin-top:8px;}
+.err{color:var(--rose); font-size:12px; margin-top:8px; display:none;}
+.balance-note{font-size:12.5px; margin-top:6px; color:var(--ink-soft);}
+.balance-note b{color:var(--teal-dark);}
+
+/* Overview modal specifics */
+.tab-row{display:flex; gap:6px; margin-top:14px; border-bottom:1px solid var(--line);}
+.ov-tab{
+  font-size:12.5px; font-weight:600; color:var(--ink-soft); padding:8px 4px; cursor:pointer;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+}
+.ov-tab.active{color:var(--teal-dark); border-bottom-color:var(--gold);}
+.ov-panel{margin-top:14px;}
+.search-result{
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer;
+}
+.search-result:hover{background:var(--bg);}
+.search-result .sr-left{font-size:13px;}
+.search-result .sr-left .n{font-weight:600; color:var(--teal-dark);}
+.search-result .sr-left .m{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft);}
+.search-result .sr-right{font-size:11px; text-align:right; color:var(--ink-soft);}
+.empty-note{font-size:13px; color:var(--ink-soft); padding:12px 0;}
+
+.footer-note{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:16px; opacity:0.8; }
+
+.btn.whatsapp{ background:#25D366; color:#fff; }
+.btn.whatsapp:hover{ background:#1DA851; }
+
+/* ---------- Receipt paper ---------- */
+.receipt-paper{
+  border:1.5px solid var(--teal-dark); border-radius:4px; padding:20px 22px; margin-top:14px;
+  background:#FEFCF6; position:relative;
+}
+.receipt-paper::before{
+  content:""; position:absolute; inset:6px; border:1px dashed var(--gold-line); border-radius:2px; pointer-events:none;
+}
+.rp-head{ text-align:center; padding-bottom:12px; margin-bottom:12px; border-bottom:2px solid var(--teal-dark); }
+.rp-head .rp-title{ font-family:'Marcellus', serif; font-size:19px; color:var(--teal-dark); margin:0; }
+.rp-head .rp-sub{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); margin:4px 0 0; }
+.rp-ref{ text-align:center; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--gold); letter-spacing:0.06em; margin-bottom:14px; }
+.rp-row{ display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dotted var(--line); font-size:13px; }
+.rp-row:last-child{border-bottom:none;}
+.rp-row .k{color:var(--ink-soft);}
+.rp-row .v{font-weight:600; text-align:right;}
+.rp-row .v.mono{font-family:'IBM Plex Mono', monospace; font-weight:500;}
+.rp-divider{ border-top:1px dashed var(--gold-line); margin:10px 0; }
+.rp-footer{ text-align:center; margin-top:14px; font-size:11.5px; color:var(--ink-soft); font-style:italic; }
+
+/* ---------- Accounts summary ---------- */
+.acct-hero{
+  background:linear-gradient(160deg,var(--teal) 0%, var(--teal-dark) 100%);
+  color:#F7F3E8; border-radius:14px; padding:18px 20px; margin-top:4px;
+}
+.acct-hero .lbl{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); opacity:0.9; }
+.acct-hero .num{ font-family:'Marcellus', serif; font-size:32px; margin:4px 0 0; }
+.acct-hero .sub{ font-size:12px; color:#D9E3DE; opacity:0.85; margin-top:6px; }
+
+.acct-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+.acct-card{ background:var(--bg); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:12px; padding:12px 14px; }
+.acct-card.received{border-left-color:var(--green);}
+.acct-card.sd-collected{border-left-color:var(--gold);}
+.acct-card.sd-released{border-left-color:var(--teal);}
+.acct-card.balance-due{border-left-color:var(--rose);}
+.acct-card .num{ font-family:'IBM Plex Mono', monospace; font-size:16.5px; font-weight:600; color:var(--teal-dark); }
+.acct-card .lbl{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; }
+
+#printArea{display:none;}
+
+@media print{
+  body.printing > .app{display:none !important;}
+  body.printing > .overlay{ position:static !important; background:none !important; padding:0 !important; }
+  body.printing #printArea{ display:block; }
+  body.printing .receipt-paper{ margin-top:0; }
+}
+
+@media (max-width:520px){
+  .row2, .row3{grid-template-columns:1fr;}
+  .summary-strip{grid-template-columns:repeat(2,1fr);}
+  .day .name{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="header-inner">
+      <svg class="mark" viewBox="0 0 100 100" fill="none">
+        <g stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+          <path d="M50 5 L61 39 L95 39 L67 60 L78 94 L50 73 L22 94 L33 60 L5 39 L39 39 Z"/>
+        </g>
+      </svg>
+      <div class="titles">
+        <p class="eyebrow">Booking Register</p>
+        <h1>Jamat Khana Booking</h1>
+        <p class="subtitle">Ground · First · Second Floor — availability, events &amp; deposit tracking</p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="overviewBtn">Overview &amp; Search</button>
+      </div>
+    </div>
+    <div class="floor-row" id="floorRow"></div>
+  </div>
+
+  <div class="card">
+    <div class="cal-head">
+      <div class="month-label" id="monthLabel">—</div>
+      <div class="nav-group">
+        <button class="today-btn" id="todayBtn">Today</button>
+        <button class="nav-btn" id="prevBtn">‹</button>
+        <button class="nav-btn" id="nextBtn">›</button>
+      </div>
+    </div>
+
+    <div class="summary-strip" id="summaryStrip"></div>
+
+    <div class="weekdays" id="weekdays"></div>
+    <div class="grid" id="grid"></div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch available"></span>Available</div>
+      <div class="legend-item"><span class="swatch partial"></span>One slot booked</div>
+      <div class="legend-item"><span class="swatch full"></span>Fully booked</div>
+      <div class="legend-item"><span class="swatch released"></span>Deposit released</div>
+    </div>
+  </div>
+
+  <p class="footer-note" id="footerNote">Loading bookings…</p>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
+<div class="overlay" id="overlayOv"><div class="modal wide" id="modalOv"></div></div>
+<div id="printArea"></div>
+
+<script>
+(function(){
+
+  var starSVG = "<svg xmlns='http://www.w3.org/2000/svg' width='84' height='84'><path d='M42 8 L50 34 L76 34 L55 49 L63 75 L42 60 L21 75 L29 49 L8 34 L34 34 Z' fill='none' stroke='%23F7F3E8' stroke-width='2'/></svg>";
+  document.documentElement.style.setProperty('--star-pattern', "url(\"data:image/svg+xml," + encodeURIComponent(starSVG).replace(/'/g,"%27") + "\")");
+
+  var FLOORS = [
+    {id:'ground', key:'bookings-ground', label:'Ground Floor'},
+    {id:'first',  key:'bookings-first',  label:'First Floor'},
+    {id:'second', key:'bookings-second', label:'Second Floor'}
+  ];
+  var SLOTS = [
+    {id:'morning', label:'Morning'},
+    {id:'evening', label:'Evening'},
+    {id:'full', label:'Full Day'}
+  ];
+  var EVENT_TYPES = ['Nikah / Wedding','Majlis','Meeting','Birthday / Anniversary','Condolence','Other'];
+  var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  var state = {
+    data: { ground:{}, first:{}, second:{} },
+    currentFloor: 'ground',
+    viewYear: new Date().getFullYear(),
+    viewMonth: new Date().getMonth(),
+    loaded: false
+  };
+
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+  function isoDate(y,m,d){ return y+'-'+pad(m+1)+'-'+pad(d); }
+  function todayIso(){ var t=new Date(); return isoDate(t.getFullYear(), t.getMonth(), t.getDate()); }
+  function genId(){ return 'b'+Date.now()+Math.random().toString(36).slice(2,7); }
+  function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+  function money(v){ return '₹ ' + num(v).toLocaleString('en-IN'); }
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function attr(v){ return v ? escapeHtml(String(v)) : ''; }
+
+  // ---------- Storage ----------
+  async function loadAll(){
+    var footer = document.getElementById('footerNote');
+    try{
+      var results = await Promise.all(FLOORS.map(function(f){
+        return window.storage.get(f.key, true).catch(function(){ return null; });
+      }));
+      results.forEach(function(res, i){
+        var f = FLOORS[i];
+        var parsed = {};
+        if(res && res.value){
+          try{ parsed = JSON.parse(res.value); }catch(e){ parsed = {}; }
+        }
+        // migrate old single-booking-per-day format to slot arrays
+        Object.keys(parsed).forEach(function(iso){
+          var val = parsed[iso];
+          if(val && !Array.isArray(val)){
+            val.slot = 'full';
+            val.id = val.id || genId();
+            parsed[iso] = [val];
+          }
+        });
+        state.data[f.id] = parsed;
+      });
+      footer.textContent = 'Bookings are shared — everyone using this app sees the same calendar.';
+    }catch(e){
+      footer.textContent = 'Could not load saved bookings. You can still browse, but saving may fail.';
+    }
+    state.loaded = true;
+  }
+
+  async function saveFloor(floorId){
+    var f = FLOORS.find(function(x){ return x.id===floorId; });
+    try{
+      var res = await window.storage.set(f.key, JSON.stringify(state.data[floorId]), true);
+      if(!res){ throw new Error('no result'); }
+      return true;
+    }catch(e){
+      alert('Sorry, this booking could not be saved. Please check your connection and try again.');
+      return false;
+    }
+  }
+
+  function dayBookings(floorId, iso){ return (state.data[floorId] && state.data[floorId][iso]) || []; }
+  function takenSlots(list){ return list.map(function(b){ return b.slot; }); }
+  function isFullyBooked(list){
+    if(list.length===0) return false;
+    if(takenSlots(list).indexOf('full') !== -1) return true;
+    return takenSlots(list).indexOf('morning')!==-1 && takenSlots(list).indexOf('evening')!==-1;
+  }
+  function availableSlots(list){
+    var taken = takenSlots(list);
+    if(taken.indexOf('full')!==-1) return [];
+    return SLOTS.filter(function(s){
+      if(s.id==='full') return taken.length===0;
+      return taken.indexOf(s.id)===-1;
+    });
+  }
+
+  // ---------- Floor tabs ----------
+  function renderFloorTabs(){
+    var row = document.getElementById('floorRow');
+    row.innerHTML = '';
+    FLOORS.forEach(function(f){
+      var btn = document.createElement('button');
+      btn.className = 'floor-tab' + (state.currentFloor===f.id ? ' active' : '');
+      btn.innerHTML = '<span class="dot"></span>' + f.label;
+      btn.onclick = function(){ state.currentFloor = f.id; renderFloorTabs(); renderCalendar(); };
+      row.appendChild(btn);
+    });
+  }
+
+  function renderWeekdays(){
+    document.getElementById('weekdays').innerHTML = WEEKDAYS.map(function(w){ return '<div>'+w+'</div>'; }).join('');
+  }
+
+  function floorLabel(id){ return FLOORS.find(function(f){ return f.id===(id||state.currentFloor); }).label; }
+
+  // ---------- Month summary ----------
+  function renderSummaryStrip(){
+    var y=state.viewYear, m=state.viewMonth;
+    var bookings = state.data[state.currentFloor] || {};
+    var count=0, collected=0, balanceDue=0, depositPending=0;
+    Object.keys(bookings).forEach(function(iso){
+      var d = new Date(iso+'T00:00:00');
+      if(d.getFullYear()===y && d.getMonth()===m){
+        bookings[iso].forEach(function(b){
+          count++;
+          collected += num(b.amountPaid);
+          balanceDue += Math.max(num(b.totalAmount) - num(b.amountPaid), 0);
+          if(!b.sdReleased) depositPending += num(b.sdAmount);
+        });
+      }
+    });
+    var el = document.getElementById('summaryStrip');
+    el.innerHTML =
+      summaryCell(count, 'Bookings this month') +
+      summaryCell(money(collected), 'Collected') +
+      summaryCell(money(balanceDue), 'Balance due') +
+      summaryCell(money(depositPending), 'Deposits pending');
+  }
+  function summaryCell(num, lbl){ return '<div class="summary-cell"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
+
+  // ---------- Calendar ----------
+  function renderCalendar(){
+    var y = state.viewYear, m = state.viewMonth;
+    document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
+    renderSummaryStrip();
+
+    var grid = document.getElementById('grid');
+    grid.innerHTML = '';
+
+    var firstDow = new Date(y, m, 1).getDay();
+    var daysInMonth = new Date(y, m+1, 0).getDate();
+    var daysInPrev = new Date(y, m, 0).getDate();
+    var todayStr = todayIso();
+    var totalCells = Math.ceil((firstDow + daysInMonth) / 7) * 7;
+
+    for(var i=0; i<totalCells; i++){
+      var cell = document.createElement('div');
+      var dayNum, cellYear, cellMonth, muted = false;
+
+      if(i < firstDow){
+        dayNum = daysInPrev - firstDow + 1 + i; cellMonth = m-1; cellYear = y;
+        if(cellMonth < 0){ cellMonth = 11; cellYear = y-1; } muted = true;
+      } else if(i >= firstDow + daysInMonth){
+        dayNum = i - firstDow - daysInMonth + 1; cellMonth = m+1; cellYear = y;
+        if(cellMonth > 11){ cellMonth = 0; cellYear = y+1; } muted = true;
+      } else {
+        dayNum = i - firstDow + 1; cellMonth = m; cellYear = y;
+      }
+
+      var iso = isoDate(cellYear, cellMonth, dayNum);
+      cell.className = 'day' + (muted ? ' muted' : '');
+      if(iso === todayStr) cell.className += ' is-today';
+
+      var list = dayBookings(state.currentFloor, iso);
+      var html = '<span class="num">'+dayNum+'</span>';
+      if(list.length){
+        var full = isFullyBooked(list);
+        var allReleased = list.every(function(b){ return b.sdReleased; });
+        cell.className += ' is-booked ' + (full ? 'full-booked' : 'partial') + (allReleased ? ' released' : '');
+        if(list.length>1) html += '<span class="count-badge">×'+list.length+'</span>';
+        html += '<span class="status-dot"></span>';
+        html += '<span class="name">'+escapeHtml(list[0].name)+(list.length>1?' +'+(list.length-1):'')+'</span>';
+      }
+      cell.innerHTML = html;
+
+      if(!muted){
+        cell.addEventListener('click', function(isoArg){ return function(){ openDayModal(isoArg); }; }(iso));
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  // ---------- Receipt & WhatsApp helpers ----------
+  function refCode(b){ return 'JK-' + b.id.slice(-6).toUpperCase(); }
+
+  function normalizePhone(mobile){
+    var digits = (mobile||'').replace(/\D/g,'');
+    if(digits.length===10) return '91'+digits;
+    if(digits.length===11 && digits[0]==='0') return '91'+digits.slice(1);
+    return digits;
+  }
+
+  function buildReceiptPaperHtml(iso, floorId, b){
+    var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : b.eventType;
+    var balance = Math.max(num(b.totalAmount)-num(b.amountPaid),0);
+    var generatedOn = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+    return '<div class="receipt-paper">'+
+      '<div class="rp-head"><p class="rp-title">Jamat Khana Booking Confirmation</p>'+
+        '<p class="rp-sub">'+floorLabel(floorId)+'</p></div>'+
+      '<p class="rp-ref">Ref '+refCode(b)+'</p>'+
+      rpRow('Date', fmtDateLabel(iso)) +
+      rpRow('Time slot', slotLabel(b.slot)) +
+      rpRow('Event / purpose', eventLabel||'—') +
+      '<div class="rp-divider"></div>'+
+      rpRow('Booked by', escapeHtml(b.name)) +
+      rpRow('Mobile', escapeHtml(b.mobile), true) +
+      rpRow('Address', escapeHtml(b.address)||'—') +
+      '<div class="rp-divider"></div>'+
+      rpRow('Total charge', money(b.totalAmount), true) +
+      rpRow('Amount paid', money(b.amountPaid), true) +
+      rpRow('Balance due', money(balance), true) +
+      rpRow('Security deposit', money(b.sdAmount), true) +
+      (b.paymentDetails ? rpRow('Payment details', escapeHtml(b.paymentDetails)) : '') +
+      '<p class="rp-footer">Generated on '+generatedOn+' · Please retain for your records</p>'+
+    '</div>';
+  }
+  function rpRow(k,v,mono){ return '<div class="rp-row"><span class="k">'+k+'</span><span class="v'+(mono?' mono':'')+'">'+(v||'—')+'</span></div>'; }
+
+  function buildWhatsappText(iso, floorId, b){
+    var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : b.eventType;
+    var balance = Math.max(num(b.totalAmount)-num(b.amountPaid),0);
+    return 'Jamat Khana Booking Confirmation\n'+
+      'Ref: '+refCode(b)+'\n\n'+
+      'Dear '+b.name+',\n'+
+      'Your booking is confirmed:\n\n'+
+      'Floor: '+floorLabel(floorId)+'\n'+
+      'Date: '+fmtDateLabel(iso)+'\n'+
+      'Slot: '+slotLabel(b.slot)+'\n'+
+      'Event: '+(eventLabel||'—')+'\n\n'+
+      'Total charge: '+money(b.totalAmount)+'\n'+
+      'Amount paid: '+money(b.amountPaid)+'\n'+
+      'Balance due: '+money(balance)+'\n'+
+      'Security deposit: '+money(b.sdAmount)+'\n\n'+
+      'Please keep this message for your reference. Thank you!';
+  }
+
+  function printReceipt(iso, floorId, b){
+    document.getElementById('printArea').innerHTML = buildReceiptPaperHtml(iso, floorId, b);
+    document.body.classList.add('printing');
+    window.print();
+  }
+  window.addEventListener('afterprint', function(){
+    document.body.classList.remove('printing');
+    document.getElementById('printArea').innerHTML = '';
+  });
+
+  function renderReceiptView(iso, floorId, b, justCreated){
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+(justCreated?'Booking confirmed':'Receipt')+'</p>'+
+        '<h2 class="modal-title">Confirmation slip</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      buildReceiptPaperHtml(iso, floorId, b)+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="mBack">Back to day</button>'+
+        '<button class="btn primary" id="mPrint">Print / Save as PDF</button>'+
+      '</div>'+
+      '<a class="btn whatsapp block" id="waLink" target="_blank" rel="noopener">Share on WhatsApp</a>'+
+      '<p class="hint">Opens the booker\u2019s WhatsApp chat with the confirmation pre-filled — just press send.</p>';
+
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('mBack').onclick = function(){ renderDayView(iso, floorId); };
+    document.getElementById('mPrint').onclick = function(){ printReceipt(iso, floorId, b); };
+    document.getElementById('waLink').href = 'https://wa.me/'+normalizePhone(b.mobile)+'?text='+encodeURIComponent(buildWhatsappText(iso, floorId, b));
+  }
+
+  function fmtDateLabel(iso){
+    var parts = iso.split('-').map(Number);
+    var d = new Date(parts[0], parts[1]-1, parts[2]);
+    return d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+  function slotLabel(id){ var s = SLOTS.find(function(x){ return x.id===id; }); return s ? s.label : id; }
+
+  // ---------- Day modal: list of bookings + add ----------
+  var overlay = document.getElementById('overlay');
+  var modalBox = document.getElementById('modalBox');
+  function closeModal(){ overlay.classList.remove('show'); modalBox.innerHTML=''; }
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeModal(); });
+
+  function openDayModal(iso, floorOverride){
+    var floorId = floorOverride || state.currentFloor;
+    renderDayView(iso, floorId);
+    overlay.classList.add('show');
+  }
+
+  function renderDayView(iso, floorId){
+    var list = dayBookings(floorId, iso);
+    var avail = availableSlots(list);
+    var cardsHtml = list.map(function(b){ return bookingCardHtml(b); }).join('');
+
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+' · '+floorLabel(floorId)+'</p>'+
+        '<h2 class="modal-title">'+(list.length? 'Bookings for this day' : 'No bookings yet')+'</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      (cardsHtml || '<p class="hint">This day is open on '+floorLabel(floorId)+'.</p>')+
+      (avail.length ? '<button class="btn add block" id="mAdd">+ Add booking ('+avail.map(function(s){return s.label;}).join(' / ')+' available)</button>' : '<p class="hint" style="margin-top:14px;">This day is fully booked.</p>');
+
+    document.getElementById('mClose').onclick = closeModal;
+    var addBtn = document.getElementById('mAdd');
+    if(addBtn) addBtn.onclick = function(){ renderFormView(iso, floorId, null, avail); };
+
+    list.forEach(function(b){
+      var rcptBtn = document.getElementById('rcpt-'+b.id);
+      var editBtn = document.getElementById('edit-'+b.id);
+      var relBtn = document.getElementById('rel-'+b.id);
+      var cancelBtn = document.getElementById('can-'+b.id);
+      if(rcptBtn) rcptBtn.onclick = function(){ renderReceiptView(iso, floorId, b, false); };
+      if(editBtn) editBtn.onclick = function(){ renderFormView(iso, floorId, b, null); };
+      if(relBtn) relBtn.onclick = function(){ renderReleaseView(iso, floorId, b); };
+      if(cancelBtn) cancelBtn.onclick = function(){ handleCancelBooking(iso, floorId, b.id); };
+    });
+  }
+
+  function bookingCardHtml(b){
+    var balance = Math.max(num(b.totalAmount) - num(b.amountPaid), 0);
+    var eventLabel = b.eventType === 'Other' ? (b.eventTypeOther || 'Other') : b.eventType;
+    return '<div class="booking-card">'+
+      '<div class="bc-head">'+
+        '<div><span class="bc-slot">'+slotLabel(b.slot)+'</span>'+
+        '<div class="bc-name">'+escapeHtml(b.name)+'</div>'+
+        '<div class="bc-event">'+escapeHtml(eventLabel||'—')+'</div></div>'+
+        '<span class="bc-pill '+(b.sdReleased?'released':'pending')+'">'+(b.sdReleased?'Deposit released':'Deposit pending')+'</span>'+
+      '</div>'+
+      '<div class="bc-rows">'+
+        bcRow('Mobile', '<a href="tel:'+attr(b.mobile)+'">'+escapeHtml(b.mobile)+'</a>', true)+
+        bcRow('Address', escapeHtml(b.address)||'—')+
+        bcRow('Total charge', money(b.totalAmount), true)+
+        bcRow('Amount paid', money(b.amountPaid), true)+
+        bcRow('Balance due', money(balance), true)+
+        bcRow('Security deposit', money(b.sdAmount), true)+
+        (b.paymentDetails ? bcRow('Payment details', escapeHtml(b.paymentDetails)) : '')+
+        (b.sdReleased ? bcRow('Released on', escapeHtml(b.sdReleaseDate||'—')) : '')+
+        (b.sdReleaseNotes ? bcRow('Release notes', escapeHtml(b.sdReleaseNotes)) : '')+
+      '</div>'+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="rcpt-'+b.id+'">Receipt</button>'+
+        '<button class="btn ghost" id="edit-'+b.id+'">Edit</button>'+
+        (b.sdReleased ? '' : '<button class="btn release" id="rel-'+b.id+'">Release deposit</button>')+
+        '<button class="btn danger" id="can-'+b.id+'">Cancel</button>'+
+      '</div>'+
+    '</div>';
+  }
+  function bcRow(k,v,mono){ return '<div class="bc-row"><span class="k">'+k+'</span><span class="v'+(mono?' mono':'')+'">'+(v||'—')+'</span></div>'; }
+
+  function renderReleaseView(iso, floorId, b){
+    var today = todayIso();
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+' · '+floorLabel(floorId)+'</p>'+
+        '<h2 class="modal-title">Release security deposit</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      '<div class="field"><label>Release date</label><input type="date" id="fReleaseDate" value="'+today+'"></div>'+
+      '<div class="field"><label>Release notes (optional)</label><textarea id="fReleaseNotes" rows="3" placeholder="e.g. Returned in cash, hall inspected, no damage">'+(b.sdReleaseNotes||'')+'</textarea></div>'+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="mBack">Back</button>'+
+        '<button class="btn primary" id="mConfirmRelease">Confirm release</button>'+
+      '</div>';
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('mBack').onclick = function(){ renderDayView(iso, floorId); };
+    document.getElementById('mConfirmRelease').onclick = async function(){
+      b.sdReleased = true;
+      b.sdReleaseDate = document.getElementById('fReleaseDate').value || today;
+      b.sdReleaseNotes = document.getElementById('fReleaseNotes').value.trim();
+      var ok = await saveFloor(floorId);
+      if(ok){ renderCalendar(); renderDayView(iso, floorId); }
+    };
+  }
+
+  function renderFormView(iso, floorId, existing, availSlots){
+    var b = existing || {};
+    var isEdit = !!existing;
+    var slotOptions = isEdit ? [SLOTS.find(function(s){return s.id===b.slot;})] : availSlots;
+    var chosenSlot = isEdit ? b.slot : (availSlots.length===1 ? availSlots[0].id : null);
+
+    var slotHtml = SLOTS.map(function(s){
+      var isOption = slotOptions.some(function(o){ return o && o.id===s.id; });
+      var disabled = !isOption;
+      var selected = s.id===chosenSlot;
+      return '<div class="slot-opt'+(selected?' selected':'')+(disabled?' disabled':'')+'" data-slot="'+s.id+'">'+s.label+'</div>';
+    }).join('');
+
+    var eventOptionsHtml = EVENT_TYPES.map(function(e){
+      return '<option value="'+e+'" '+(b.eventType===e?'selected':'')+'>'+e+'</option>';
+    }).join('');
+
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+' · '+floorLabel(floorId)+'</p>'+
+        '<h2 class="modal-title">'+(isEdit?'Edit booking':'New booking')+'</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      '<div class="field"><label>Time slot</label><div class="slot-choice" id="slotChoice">'+slotHtml+'</div></div>'+
+      '<div class="field"><label>Event / purpose</label><select id="fEventType">'+eventOptionsHtml+'</select></div>'+
+      '<div class="field" id="fEventOtherWrap" style="'+(b.eventType==='Other'?'':'display:none;')+'"><label>Please specify</label><input type="text" id="fEventOther" value="'+attr(b.eventTypeOther)+'" placeholder="Describe the event"></div>'+
+      '<div class="field"><label>Name of person booking</label><input type="text" id="fName" value="'+attr(b.name)+'" placeholder="Full name"></div>'+
+      '<div class="field"><label>Mobile number</label><input type="tel" id="fMobile" value="'+attr(b.mobile)+'" placeholder="10-digit mobile number"></div>'+
+      '<div class="field"><label>Address</label><textarea id="fAddress" rows="2" placeholder="Full address">'+(b.address||'')+'</textarea></div>'+
+      '<div class="row3">'+
+        '<div class="field"><label>Total charge (₹)</label><input type="number" id="fTotalAmount" value="'+attr(b.totalAmount)+'" placeholder="0"></div>'+
+        '<div class="field"><label>Amount paid (₹)</label><input type="number" id="fAmountPaid" value="'+attr(b.amountPaid)+'" placeholder="0"></div>'+
+        '<div class="field"><label>Deposit (₹)</label><input type="number" id="fSdAmount" value="'+attr(b.sdAmount)+'" placeholder="0"></div>'+
+      '</div>'+
+      '<p class="balance-note" id="balanceNote"></p>'+
+      '<div class="field"><label>Payment details</label><textarea id="fPaymentDetails" rows="2" placeholder="e.g. UPI, cheque no., cash — reference notes">'+(b.paymentDetails||'')+'</textarea></div>'+
+      '<p class="err" id="fErr">Please choose a slot and fill in the name and mobile number.</p>'+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="mCancelForm">Cancel</button>'+
+        '<button class="btn primary" id="mSave">'+(isEdit?'Save changes':'Confirm booking')+'</button>'+
+      '</div>';
+
+    var selectedSlot = chosenSlot;
+    document.querySelectorAll('#slotChoice .slot-opt').forEach(function(opt){
+      opt.addEventListener('click', function(){
+        if(opt.classList.contains('disabled')) return;
+        document.querySelectorAll('#slotChoice .slot-opt').forEach(function(o){ o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        selectedSlot = opt.getAttribute('data-slot');
+      });
+    });
+
+    var eventSelect = document.getElementById('fEventType');
+    var otherWrap = document.getElementById('fEventOtherWrap');
+    eventSelect.onchange = function(){ otherWrap.style.display = eventSelect.value==='Other' ? '' : 'none'; };
+
+    function updateBalance(){
+      var total = num(document.getElementById('fTotalAmount').value);
+      var paid = num(document.getElementById('fAmountPaid').value);
+      var bal = Math.max(total-paid,0);
+      document.getElementById('balanceNote').innerHTML = 'Balance due: <b>'+money(bal)+'</b>';
+    }
+    document.getElementById('fTotalAmount').addEventListener('input', updateBalance);
+    document.getElementById('fAmountPaid').addEventListener('input', updateBalance);
+    updateBalance();
+
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('mCancelForm').onclick = function(){ renderDayView(iso, floorId); };
+    document.getElementById('mSave').onclick = async function(){
+      var name = document.getElementById('fName').value.trim();
+      var mobile = document.getElementById('fMobile').value.trim();
+      if(!name || !mobile || !selectedSlot){
+        document.getElementById('fErr').style.display = 'block';
+        return;
+      }
+      var record = {
+        id: b.id || genId(),
+        slot: selectedSlot,
+        eventType: document.getElementById('fEventType').value,
+        eventTypeOther: document.getElementById('fEventOther').value.trim(),
+        name: name,
+        mobile: mobile,
+        address: document.getElementById('fAddress').value.trim(),
+        totalAmount: document.getElementById('fTotalAmount').value.trim(),
+        amountPaid: document.getElementById('fAmountPaid').value.trim(),
+        sdAmount: document.getElementById('fSdAmount').value.trim(),
+        paymentDetails: document.getElementById('fPaymentDetails').value.trim(),
+        sdReleased: b.sdReleased || false,
+        sdReleaseDate: b.sdReleaseDate || '',
+        sdReleaseNotes: b.sdReleaseNotes || ''
+      };
+
+      if(!state.data[floorId][iso]) state.data[floorId][iso] = [];
+      var arr = state.data[floorId][iso];
+      var idx = arr.findIndex(function(x){ return x.id===record.id; });
+      var wasNew = idx===-1;
+      if(idx>-1) arr[idx] = record; else arr.push(record);
+
+      var ok = await saveFloor(floorId);
+      if(ok){
+        renderCalendar();
+        if(wasNew) renderReceiptView(iso, floorId, record, true);
+        else renderDayView(iso, floorId);
+      }
+    };
+  }
+
+  async function handleCancelBooking(iso, floorId, bookingId){
+    if(!confirm('Remove this booking? This cannot be undone.')) return;
+    var arr = state.data[floorId][iso] || [];
+    state.data[floorId][iso] = arr.filter(function(x){ return x.id!==bookingId; });
+    if(state.data[floorId][iso].length===0) delete state.data[floorId][iso];
+    var ok = await saveFloor(floorId);
+    if(ok){ renderCalendar(); renderDayView(iso, floorId); }
+  }
+
+  // ---------- Overview modal: search / upcoming / export ----------
+  var overlayOv = document.getElementById('overlayOv');
+  var modalOv = document.getElementById('modalOv');
+  var ovState = { tab:'search' };
+  overlayOv.addEventListener('click', function(e){ if(e.target===overlayOv) overlayOv.classList.remove('show'); });
+  document.getElementById('overviewBtn').onclick = function(){ renderOverview(); overlayOv.classList.add('show'); };
+
+  function allBookingsFlat(){
+    var out = [];
+    FLOORS.forEach(function(f){
+      var floorData = state.data[f.id] || {};
+      Object.keys(floorData).forEach(function(iso){
+        floorData[iso].forEach(function(b){
+          out.push({ iso:iso, floorId:f.id, floorLabel:f.label, b:b });
+        });
+      });
+    });
+    return out;
+  }
+
+  function renderOverview(){
+    modalOv.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">All floors</p><h2 class="modal-title">Overview &amp; search</h2></div>'+
+        '<button class="close-btn" id="ovClose">&times;</button>'+
+      '</div>'+
+      '<div class="tab-row" id="ovTabs">'+
+        '<div class="ov-tab" data-tab="search">Search</div>'+
+        '<div class="ov-tab" data-tab="day">Day view</div>'+
+        '<div class="ov-tab" data-tab="all">All bookings</div>'+
+        '<div class="ov-tab" data-tab="upcoming">Upcoming</div>'+
+        '<div class="ov-tab" data-tab="accounts">Accounts</div>'+
+        '<div class="ov-tab" data-tab="export">Export</div>'+
+      '</div>'+
+      '<div class="ov-panel" id="ovPanel"></div>';
+    document.getElementById('ovClose').onclick = function(){ overlayOv.classList.remove('show'); };
+    document.querySelectorAll('#ovTabs .ov-tab').forEach(function(t){
+      t.onclick = function(){ ovState.tab = t.getAttribute('data-tab'); renderOverviewPanel(); };
+    });
+    renderOverviewPanel();
+  }
+
+  function renderOverviewPanel(){
+    document.querySelectorAll('#ovTabs .ov-tab').forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-tab')===ovState.tab);
+    });
+    var panel = document.getElementById('ovPanel');
+    if(ovState.tab==='search') renderSearchPanel(panel);
+    else if(ovState.tab==='day') renderDayLookupPanel(panel);
+    else if(ovState.tab==='all') renderAllBookingsPanel(panel);
+    else if(ovState.tab==='upcoming') renderUpcomingPanel(panel);
+    else if(ovState.tab==='accounts') renderAccountsPanel(panel);
+    else renderExportPanel(panel);
+  }
+
+  function renderSearchPanel(panel){
+    panel.innerHTML =
+      '<div class="field" style="margin-top:0;"><input type="text" id="ovSearchInput" placeholder="Search by name or mobile number…"></div>'+
+      '<div id="ovResults"></div>';
+    var input = document.getElementById('ovSearchInput');
+    input.addEventListener('input', function(){ renderSearchResults(input.value.trim().toLowerCase()); });
+    input.focus();
+    renderSearchResults('');
+  }
+
+  function renderSearchResults(query){
+    var resultsEl = document.getElementById('ovResults');
+    var all = allBookingsFlat();
+    var matches = query ? all.filter(function(item){
+      return (item.b.name||'').toLowerCase().indexOf(query)!==-1 || (item.b.mobile||'').indexOf(query)!==-1;
+    }) : [];
+    matches.sort(function(a,b){ return a.iso.localeCompare(b.iso); });
+    if(!query){ resultsEl.innerHTML = '<p class="empty-note">Type a name or mobile number to search across all floors and months.</p>'; return; }
+    if(matches.length===0){ resultsEl.innerHTML = '<p class="empty-note">No bookings found.</p>'; return; }
+    resultsEl.innerHTML = matches.map(function(item){
+      return '<div class="search-result" data-iso="'+item.iso+'" data-floor="'+item.floorId+'">'+
+        '<div class="sr-left"><div class="n">'+escapeHtml(item.b.name)+'</div><div class="m">'+escapeHtml(item.b.mobile)+'</div></div>'+
+        '<div class="sr-right">'+fmtDateLabel(item.iso).split(',')[0]+', '+item.iso.slice(0,4)+'<br>'+item.floorLabel+' · '+slotLabel(item.b.slot)+'</div>'+
+      '</div>';
+    }).join('');
+    resultsEl.querySelectorAll('.search-result').forEach(function(row){
+      row.onclick = function(){
+        var iso = row.getAttribute('data-iso');
+        var floorId = row.getAttribute('data-floor');
+        state.currentFloor = floorId;
+        var d = new Date(iso+'T00:00:00');
+        state.viewYear = d.getFullYear(); state.viewMonth = d.getMonth();
+        renderFloorTabs(); renderCalendar();
+        overlayOv.classList.remove('show');
+        openDayModal(iso, floorId);
+      };
+    });
+  }
+
+  function renderDayLookupPanel(panel){
+    panel.innerHTML =
+      '<div class="field" style="margin-top:0;"><label>Choose a date</label><input type="date" id="dayLookupInput" value="'+todayIso()+'"></div>'+
+      '<div id="dayLookupResults"></div>';
+    document.getElementById('dayLookupInput').addEventListener('input', renderDayLookupResults);
+    renderDayLookupResults();
+  }
+
+  function renderDayLookupResults(){
+    var iso = document.getElementById('dayLookupInput').value;
+    var el = document.getElementById('dayLookupResults');
+    if(!iso){ el.innerHTML = ''; return; }
+    el.innerHTML = '<p class="hint" style="margin-top:12px; font-size:13px;">'+fmtDateLabel(iso)+'</p>' +
+      FLOORS.map(function(f){
+        var list = dayBookings(f.id, iso);
+        var body = list.length
+          ? list.map(function(b){ return dayLookupCardHtml(f.id, iso, b); }).join('')
+          : '<p class="empty-note" style="padding:6px 0;">Open — no bookings on this floor.</p>';
+        return '<div style="margin-top:14px;">'+
+          '<p style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 6px;">'+f.label+'</p>'+
+          body+'</div>';
+      }).join('');
+
+    FLOORS.forEach(function(f){
+      dayBookings(f.id, iso).forEach(function(b){
+        var btn = document.getElementById('manage-'+b.id);
+        if(btn) btn.onclick = function(){
+          state.currentFloor = f.id;
+          var d = new Date(iso+'T00:00:00');
+          state.viewYear = d.getFullYear(); state.viewMonth = d.getMonth();
+          renderFloorTabs(); renderCalendar();
+          overlayOv.classList.remove('show');
+          openDayModal(iso, f.id);
+        };
+      });
+    });
+  }
+
+  function dayLookupCardHtml(floorId, iso, b){
+    var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : b.eventType;
+    var balance = Math.max(num(b.totalAmount)-num(b.amountPaid),0);
+    return '<div class="booking-card" style="margin-top:8px;">'+
+      '<div class="bc-head">'+
+        '<div><span class="bc-slot">'+slotLabel(b.slot)+'</span>'+
+        '<div class="bc-name">'+escapeHtml(b.name)+'</div>'+
+        '<div class="bc-event">'+escapeHtml(eventLabel||'—')+' · '+escapeHtml(b.mobile)+'</div></div>'+
+        '<span class="bc-pill '+(b.sdReleased?'released':'pending')+'">'+(b.sdReleased?'Released':'Pending')+'</span>'+
+      '</div>'+
+      '<div class="bc-rows">'+ bcRow('Balance due', money(balance), true) +'</div>'+
+      '<div class="bc-actions"><button class="btn ghost" id="manage-'+b.id+'">Manage this booking</button></div>'+
+    '</div>';
+  }
+
+  function renderAllBookingsPanel(panel){
+    panel.innerHTML =
+      '<div class="row2" style="margin-bottom:4px;">'+
+        '<div class="field" style="margin-top:0;"><label>Floor</label><select id="allFloorFilter">'+
+          '<option value="all">All floors</option>'+
+          FLOORS.map(function(f){ return '<option value="'+f.id+'">'+f.label+'</option>'; }).join('')+
+        '</select></div>'+
+        '<div class="field" style="margin-top:0;"><label>Sort</label><select id="allSortOrder">'+
+          '<option value="asc">Date: earliest first</option>'+
+          '<option value="desc">Date: latest first</option>'+
+        '</select></div>'+
+      '</div>'+
+      '<div id="allResults"></div>';
+    document.getElementById('allFloorFilter').onchange = renderAllResults;
+    document.getElementById('allSortOrder').onchange = renderAllResults;
+    renderAllResults();
+  }
+
+  function renderAllResults(){
+    var floorFilter = document.getElementById('allFloorFilter').value;
+    var sortOrder = document.getElementById('allSortOrder').value;
+    var all = allBookingsFlat();
+    if(floorFilter!=='all') all = all.filter(function(item){ return item.floorId===floorFilter; });
+    all.sort(function(a,b){ return sortOrder==='asc' ? a.iso.localeCompare(b.iso) : b.iso.localeCompare(a.iso); });
+
+    var resultsEl = document.getElementById('allResults');
+    if(all.length===0){ resultsEl.innerHTML = '<p class="empty-note">No bookings found.</p>'; return; }
+
+    resultsEl.innerHTML = '<p class="hint" style="margin-top:0;">'+all.length+' booking'+(all.length===1?'':'s')+'</p>' +
+      all.map(function(item){
+        var b = item.b;
+        var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : b.eventType;
+        var balance = Math.max(num(b.totalAmount)-num(b.amountPaid),0);
+        return '<div class="search-result" data-iso="'+item.iso+'" data-floor="'+item.floorId+'">'+
+          '<div class="sr-left"><div class="n">'+escapeHtml(b.name)+'</div><div class="m">'+escapeHtml(b.mobile)+' · '+escapeHtml(eventLabel||'')+'</div></div>'+
+          '<div class="sr-right">'+fmtDateLabel(item.iso).split(',').slice(0,2).join(',')+'<br>'+item.floorLabel+' · '+slotLabel(b.slot)+
+          '<br><span class="bc-pill '+(b.sdReleased?'released':'pending')+'" style="margin-top:4px;display:inline-block;">'+money(balance)+' due</span></div>'+
+        '</div>';
+      }).join('');
+
+    resultsEl.querySelectorAll('.search-result').forEach(function(row){
+      row.onclick = function(){
+        var iso = row.getAttribute('data-iso');
+        var floorId = row.getAttribute('data-floor');
+        state.currentFloor = floorId;
+        var d = new Date(iso+'T00:00:00');
+        state.viewYear = d.getFullYear(); state.viewMonth = d.getMonth();
+        renderFloorTabs(); renderCalendar();
+        overlayOv.classList.remove('show');
+        openDayModal(iso, floorId);
+      };
+    });
+  }
+
+  function renderUpcomingPanel(panel){
+    var today = todayIso();
+    var horizon = new Date(); horizon.setDate(horizon.getDate()+30);
+    var horizonIso = isoDate(horizon.getFullYear(), horizon.getMonth(), horizon.getDate());
+    var all = allBookingsFlat().filter(function(item){ return item.iso >= today && item.iso <= horizonIso; });
+    all.sort(function(a,b){ return a.iso.localeCompare(b.iso); });
+    if(all.length===0){ panel.innerHTML = '<p class="empty-note">No bookings in the next 30 days.</p>'; return; }
+    panel.innerHTML = all.map(function(item){
+      var eventLabel = item.b.eventType==='Other' ? (item.b.eventTypeOther||'Other') : item.b.eventType;
+      return '<div class="search-result" data-iso="'+item.iso+'" data-floor="'+item.floorId+'">'+
+        '<div class="sr-left"><div class="n">'+escapeHtml(item.b.name)+'</div><div class="m">'+escapeHtml(eventLabel||'')+'</div></div>'+
+        '<div class="sr-right">'+fmtDateLabel(item.iso).split(',').slice(0,2).join(',')+'<br>'+item.floorLabel+' · '+slotLabel(item.b.slot)+'</div>'+
+      '</div>';
+    }).join('');
+    panel.querySelectorAll('.search-result').forEach(function(row){
+      row.onclick = function(){
+        var iso = row.getAttribute('data-iso');
+        var floorId = row.getAttribute('data-floor');
+        state.currentFloor = floorId;
+        var d = new Date(iso+'T00:00:00');
+        state.viewYear = d.getFullYear(); state.viewMonth = d.getMonth();
+        renderFloorTabs(); renderCalendar();
+        overlayOv.classList.remove('show');
+        openDayModal(iso, floorId);
+      };
+    });
+  }
+
+  function computeAccounts(floorFilter, fromIso, toIso){
+    var all = allBookingsFlat();
+    if(floorFilter!=='all') all = all.filter(function(item){ return item.floorId===floorFilter; });
+    if(fromIso) all = all.filter(function(item){ return item.iso >= fromIso; });
+    if(toIso) all = all.filter(function(item){ return item.iso <= toIso; });
+
+    var totalReceived=0, sdCollected=0, sdReleased=0, balanceDue=0;
+    all.forEach(function(item){
+      var b = item.b;
+      totalReceived += num(b.amountPaid);
+      sdCollected += num(b.sdAmount);
+      if(b.sdReleased) sdReleased += num(b.sdAmount);
+      balanceDue += Math.max(num(b.totalAmount)-num(b.amountPaid),0);
+    });
+    var sdHeld = sdCollected - sdReleased;
+    return {
+      totalReceived:totalReceived, sdCollected:sdCollected, sdReleased:sdReleased,
+      sdHeld:sdHeld, cashBalance:totalReceived+sdHeld, balanceDue:balanceDue, count:all.length
+    };
+  }
+
+  function renderAccountsPanel(panel){
+    var today = todayIso();
+    var firstOfMonth = today.slice(0,8)+'01';
+    panel.innerHTML =
+      '<div class="row2" style="margin-bottom:4px;">'+
+        '<div class="field" style="margin-top:0;"><label>Floor</label><select id="acctFloorFilter">'+
+          '<option value="all">All floors</option>'+
+          FLOORS.map(function(f){ return '<option value="'+f.id+'">'+f.label+'</option>'; }).join('')+
+        '</select></div>'+
+        '<div class="field" style="margin-top:0;"><label>Period</label><select id="acctRange">'+
+          '<option value="all">All time</option>'+
+          '<option value="month">This month</option>'+
+          '<option value="custom">Custom range</option>'+
+        '</select></div>'+
+      '</div>'+
+      '<div class="row2" id="acctCustomRange" style="display:none;">'+
+        '<div class="field" style="margin-top:0;"><label>From</label><input type="date" id="acctFrom" value="'+firstOfMonth+'"></div>'+
+        '<div class="field" style="margin-top:0;"><label>To</label><input type="date" id="acctTo" value="'+today+'"></div>'+
+      '</div>'+
+      '<div id="acctResults"></div>';
+
+    document.getElementById('acctFloorFilter').onchange = renderAcctResults;
+    document.getElementById('acctRange').onchange = function(){
+      document.getElementById('acctCustomRange').style.display = this.value==='custom' ? '' : 'none';
+      renderAcctResults();
+    };
+    document.getElementById('acctFrom').onchange = renderAcctResults;
+    document.getElementById('acctTo').onchange = renderAcctResults;
+    renderAcctResults();
+  }
+
+  function renderAcctResults(){
+    var floorFilter = document.getElementById('acctFloorFilter').value;
+    var range = document.getElementById('acctRange').value;
+    var today = todayIso();
+    var fromIso = null, toIso = null;
+    if(range==='month'){ fromIso = today.slice(0,8)+'01'; }
+    else if(range==='custom'){
+      fromIso = document.getElementById('acctFrom').value || null;
+      toIso = document.getElementById('acctTo').value || null;
+    }
+
+    var acc = computeAccounts(floorFilter, fromIso, toIso);
+    var el = document.getElementById('acctResults');
+    el.innerHTML =
+      '<div class="acct-hero">'+
+        '<p class="lbl">Total cash balance with you</p>'+
+        '<p class="num">'+money(acc.cashBalance)+'</p>'+
+        '<p class="sub">Hall charges received plus deposits still held, across '+acc.count+' booking'+(acc.count===1?'':'s')+'</p>'+
+      '</div>'+
+      '<div class="acct-grid">'+
+        acctCard('received','Total received (hall charges)', money(acc.totalReceived))+
+        acctCard('sd-collected','Security deposit collected', money(acc.sdCollected))+
+        acctCard('sd-released','Security deposit released', money(acc.sdReleased))+
+        acctCard('balance-due','Still due from customers', money(acc.balanceDue))+
+      '</div>'+
+      (floorFilter==='all'
+        ? '<div class="booking-card" style="margin-top:14px;"><p class="hint" style="margin:0 0 4px;">Cash balance by floor</p>'+renderFloorBreakdown(fromIso,toIso)+'</div>'
+        : '')+
+      '<p class="hint">This treats every amount paid and every deposit collected as cash or bank funds in hand until a deposit is marked released. "Still due from customers" is money owed to you, separate from cash already in hand.</p>';
+  }
+
+  function acctCard(cls, lbl, val){
+    return '<div class="acct-card '+cls+'"><div class="num">'+val+'</div><div class="lbl">'+lbl+'</div></div>';
+  }
+
+  function renderFloorBreakdown(fromIso, toIso){
+    return FLOORS.map(function(f){
+      var acc = computeAccounts(f.id, fromIso, toIso);
+      return bcRow(f.label, money(acc.cashBalance), true);
+    }).join('');
+  }
+
+  function renderExportPanel(panel){
+    panel.innerHTML =
+      '<p class="hint" style="margin-top:0;">Download the full booking register as a spreadsheet (CSV) — all floors, all dates.</p>'+
+      '<button class="btn primary block" id="exportBtn">Download CSV</button>';
+    document.getElementById('exportBtn').onclick = downloadCsv;
+  }
+
+  function downloadCsv(){
+    var rows = [[
+      'Floor','Date','Slot','Event','Name','Mobile','Address','Total Charge','Amount Paid','Balance Due',
+      'Security Deposit','Payment Details','Deposit Released','Release Date','Release Notes'
+    ]];
+    allBookingsFlat().sort(function(a,b){ return a.iso.localeCompare(b.iso); }).forEach(function(item){
+      var b = item.b;
+      var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : (b.eventType||'');
+      var balance = Math.max(num(b.totalAmount)-num(b.amountPaid),0);
+      rows.push([
+        item.floorLabel, item.iso, slotLabel(b.slot), eventLabel, b.name, b.mobile, b.address||'',
+        num(b.totalAmount), num(b.amountPaid), balance, num(b.sdAmount), b.paymentDetails||'',
+        b.sdReleased?'Yes':'No', b.sdReleaseDate||'', b.sdReleaseNotes||''
+      ]);
+    });
+    var csv = rows.map(function(r){
+      return r.map(function(cell){
+        var s = String(cell==null?'':cell);
+        if(/[",\n]/.test(s)) s = '"'+s.replace(/"/g,'""')+'"';
+        return s;
+      }).join(',');
+    }).join('\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'jamatkhana-bookings.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------- Nav ----------
+  document.getElementById('prevBtn').onclick = function(){
+    state.viewMonth--; if(state.viewMonth<0){ state.viewMonth=11; state.viewYear--; } renderCalendar();
+  };
+  document.getElementById('nextBtn').onclick = function(){
+    state.viewMonth++; if(state.viewMonth>11){ state.viewMonth=0; state.viewYear++; } renderCalendar();
+  };
+  document.getElementById('todayBtn').onclick = function(){
+    var t = new Date(); state.viewYear = t.getFullYear(); state.viewMonth = t.getMonth(); renderCalendar();
+  };
+
+  // ---------- Init ----------
+  renderFloorTabs();
+  renderWeekdays();
+  renderCalendar();
+  loadAll().then(renderCalendar);
+
+})();
+</script>
+</body>
+</html>
