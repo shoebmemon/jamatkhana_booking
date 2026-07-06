@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Jamat Khana Booking</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -26,7 +27,7 @@
 }
 
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
+html,body{margin:0;padding:0; overflow-x:hidden; -webkit-text-size-adjust:100%;}
 body{
   background:var(--bg);
   color:var(--ink);
@@ -34,7 +35,7 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-.app{ max-width:960px; margin:0 auto; padding:clamp(16px,4vw,36px); }
+.app{ max-width:960px; margin:0 auto; padding:clamp(14px,4vw,36px); width:100%; }
 
 /* ---------- Header ---------- */
 .header{
@@ -171,7 +172,7 @@ h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; fo
 .field{margin-top:14px;}
 .field label{ display:block; font-size:11.5px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px; }
 .field input, .field textarea, .field select{
-  width:100%; font-family:'Work Sans', sans-serif; font-size:14px; border:1px solid var(--line);
+  width:100%; font-family:'Work Sans', sans-serif; font-size:16px; border:1px solid var(--line);
   border-radius:9px; padding:9px 11px; background:var(--bg); color:var(--ink); resize:vertical;
 }
 .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--gold); background:#fff; }
@@ -308,6 +309,19 @@ h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; fo
   .row2, .row3{grid-template-columns:1fr;}
   .summary-strip{grid-template-columns:repeat(2,1fr);}
   .day .name{display:none;}
+  .acct-grid{grid-template-columns:1fr;}
+  .modal{padding:20px 16px 16px;}
+  .header-inner{gap:12px;}
+  .header-actions{width:100%;}
+  .header-actions .icon-btn{width:100%; justify-content:center;}
+}
+
+@media (max-width:380px){
+  .grid{gap:4px;}
+  .day{border-radius:9px; padding:4px 4px 3px;}
+  .day .num{font-size:11px;}
+  .floor-tab{font-size:12.5px; padding:8px 12px;}
+  .month-label{font-size:17px;}
 }
 </style>
 </head>
@@ -364,8 +378,24 @@ h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; fo
 <div class="overlay" id="overlayOv"><div class="modal wide" id="modalOv"></div></div>
 <div id="printArea"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 (function(){
+
+  // ---------- Firebase setup ----------
+  var firebaseConfig = {
+    apiKey: "AIzaSyB0gFKcuJwlWJyI5eCfgau_8ppYSmGPS4g",
+    authDomain: "jamatkhana-booking.firebaseapp.com",
+    projectId: "jamatkhana-booking",
+    storageBucket: "jamatkhana-booking.firebasestorage.app",
+    messagingSenderId: "939311936636",
+    appId: "1:939311936636:web:58ac3e365137da848145f9",
+    measurementId: "G-X4QQMQEM8N"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+  var BOOKINGS_COLLECTION = 'jamatkhana-bookings';
 
   var starSVG = "<svg xmlns='http://www.w3.org/2000/svg' width='84' height='84'><path d='M42 8 L50 34 L76 34 L55 49 L63 75 L42 60 L21 75 L29 49 L8 34 L34 34 Z' fill='none' stroke='%23F7F3E8' stroke-width='2'/></svg>";
   document.documentElement.style.setProperty('--star-pattern', "url(\"data:image/svg+xml," + encodeURIComponent(starSVG).replace(/'/g,"%27") + "\")");
@@ -401,19 +431,16 @@ h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; fo
   function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function attr(v){ return v ? escapeHtml(String(v)) : ''; }
 
-  // ---------- Storage ----------
+  // ---------- Storage (Firebase Firestore) ----------
   async function loadAll(){
     var footer = document.getElementById('footerNote');
     try{
       var results = await Promise.all(FLOORS.map(function(f){
-        return window.storage.get(f.key, true).catch(function(){ return null; });
+        return db.collection(BOOKINGS_COLLECTION).doc(f.key).get();
       }));
-      results.forEach(function(res, i){
+      results.forEach(function(snap, i){
         var f = FLOORS[i];
-        var parsed = {};
-        if(res && res.value){
-          try{ parsed = JSON.parse(res.value); }catch(e){ parsed = {}; }
-        }
+        var parsed = (snap && snap.exists) ? (snap.data() || {}) : {};
         // migrate old single-booking-per-day format to slot arrays
         Object.keys(parsed).forEach(function(iso){
           var val = parsed[iso];
@@ -425,9 +452,10 @@ h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; fo
         });
         state.data[f.id] = parsed;
       });
-      footer.textContent = 'Bookings are shared — everyone using this app sees the same calendar.';
+      footer.textContent = 'Bookings are stored in the cloud — everyone with this link sees the same calendar.';
     }catch(e){
-      footer.textContent = 'Could not load saved bookings. You can still browse, but saving may fail.';
+      console.error(e);
+      footer.textContent = 'Could not load saved bookings. Check your internet connection and try refreshing.';
     }
     state.loaded = true;
   }
@@ -435,10 +463,10 @@ h1{ font-family:'Marcellus', serif; font-size:clamp(22px,4vw,30px); margin:0; fo
   async function saveFloor(floorId){
     var f = FLOORS.find(function(x){ return x.id===floorId; });
     try{
-      var res = await window.storage.set(f.key, JSON.stringify(state.data[floorId]), true);
-      if(!res){ throw new Error('no result'); }
+      await db.collection(BOOKINGS_COLLECTION).doc(f.key).set(state.data[floorId] || {});
       return true;
     }catch(e){
+      console.error(e);
       alert('Sorry, this booking could not be saved. Please check your connection and try again.');
       return false;
     }
