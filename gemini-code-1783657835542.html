@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Jamat Khana Booking</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#F7F3E8;
+  --surface:#FFFFFF;
+  --ink:#1B2E2C;
+  --ink-soft:#5B6C67;
+  --teal:#0F4C4C;
+  --teal-dark:#0A3535;
+  --gold:#C89B3C;
+  --gold-soft:#F1E3B9;
+  --gold-mid:#E8CE8C;
+  --gold-line:#E1C783;
+  --rose:#A3453A;
+  --rose-soft:#F1D9D3;
+  --green:#3F6B4C;
+  --green-soft:#DCE7DC;
+  --line:#E6DEC7;
+  --shadow: 0 10px 30px rgba(15,40,40,0.10);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0; overflow-x:hidden; -webkit-text-size-adjust:100%;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Work Sans', sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+.app{ max-width:960px; margin:0 auto; padding:clamp(10px,3vw,36px); width:100%; }
+
+/* ---------- Header ---------- */
+.header{
+  position:relative;
+  background:linear-gradient(160deg,var(--teal) 0%, var(--teal-dark) 100%);
+  border-radius:18px;
+  padding:clamp(16px,4vw,32px) clamp(16px,5vw,36px);
+  color:#F7F3E8; overflow:hidden; box-shadow:var(--shadow);
+}
+.header::before{
+  content:""; position:absolute; inset:0;
+  background-image: var(--star-pattern);
+  background-size: 84px 84px; opacity:0.14; pointer-events:none;
+}
+.header-inner{position:relative; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+.mark{ width:42px; height:42px; flex:none; color:var(--gold); }
+.titles{flex:1; min-width:180px;}
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--gold); opacity:0.9; margin:0 0 4px;
+}
+h1{ font-family:'Marcellus', serif; font-size:clamp(20px,4vw,30px); margin:0; font-weight:400; letter-spacing:0.01em; }
+.subtitle{margin:6px 0 0; font-size:13.5px; color:#D9E3DE; opacity:0.85;}
+
+.header-actions{position:relative; display:flex; gap:8px; flex-wrap:wrap;}
+.icon-btn{
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  font-family:'Work Sans', sans-serif; font-weight:600; font-size:13px;
+  padding:12px 14px; border-radius:10px; border:1px solid rgba(247,243,232,0.28);
+  background:rgba(247,243,232,0.1); color:#F1EDE0; cursor:pointer; min-height:44px;
+}
+.icon-btn:hover{background:rgba(247,243,232,0.2);}
+
+.floor-row{ display:flex; gap:8px; margin-top:22px; flex-wrap:wrap; position:relative; }
+.floor-tab{
+  font-family:'Work Sans', sans-serif; font-weight:600; font-size:13.5px;
+  padding:10px 16px; border-radius:999px; border:1px solid rgba(247,243,232,0.25);
+  background:rgba(247,243,232,0.08); color:#EDE7D4; cursor:pointer;
+  display:flex; align-items:center; gap:7px; min-height:40px;
+  transition:background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.floor-tab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.6;}
+.floor-tab:hover{background:rgba(247,243,232,0.16);}
+.floor-tab.active{ background:var(--gold); color:var(--teal-dark); border-color:var(--gold); }
+
+/* ---------- Card / Calendar ---------- */
+.card{
+  background:var(--surface); border-radius:18px; margin-top:14px;
+  padding:clamp(12px,3vw,28px); box-shadow:var(--shadow); border:1px solid var(--line);
+}
+.cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:10px; flex-wrap:wrap; }
+.month-label{ font-family:'Marcellus', serif; font-size:20px; color:var(--teal-dark); }
+.nav-group{display:flex; align-items:center; gap:6px;}
+.nav-btn{
+  width:40px; height:40px; border-radius:10px; border:1px solid var(--line); background:var(--bg);
+  color:var(--teal-dark); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s ease;
+}
+.nav-btn:hover{background:var(--gold-soft);}
+.today-btn{
+  font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.05em; text-transform:uppercase;
+  border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); border-radius:10px; padding:0 14px;
+  height:40px; cursor:pointer; display:flex; align-items:center;
+}
+.today-btn:hover{color:var(--teal-dark); border-color:var(--gold);}
+
+/* Month summary strip */
+.summary-strip{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px;
+}
+.summary-cell{
+  background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+}
+.summary-cell .num{ font-family:'IBM Plex Mono', monospace; font-size:15px; font-weight:600; color:var(--teal-dark); word-break:break-word; }
+.summary-cell .lbl{ font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-top:2px; }
+
+.weekdays{
+  display:grid; grid-template-columns:repeat(7,1fr); font-family:'IBM Plex Mono', monospace;
+  font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px;
+}
+.weekdays > div{text-align:center; padding:4px 0;}
+
+.grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.day{
+  position:relative; aspect-ratio:1/1; border-radius:12px; border:1px solid var(--line); background:var(--bg);
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start;
+  padding:6px 6px 4px; cursor:pointer; transition:transform 0.1s ease, box-shadow 0.15s ease; overflow:hidden;
+}
+.day:hover{transform:translateY(-1px); box-shadow:0 4px 10px rgba(15,40,40,0.10);}
+.day.muted{opacity:0.35; cursor:default;}
+.day.muted:hover{transform:none; box-shadow:none;}
+.day .num{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft); }
+.day.is-today .num{ color:var(--teal-dark); font-weight:600; background:var(--gold-soft); border-radius:6px; padding:0 5px; }
+.day.partial{ background:var(--gold-soft); border-color:var(--gold-line); }
+.day.is-booked{ background:var(--gold-mid); border-color:var(--gold); }
+.day.is-booked .num{color:var(--teal-dark); font-weight:600;}
+.day.past-highlight{ background:var(--green-soft); border-color:#BFD2C0; }
+.day.past-highlight .num{ color:var(--teal-dark); }
+.day .name{
+  margin-top:auto; font-size:10px; font-weight:600; color:var(--teal-dark);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
+}
+.day .count-badge{
+  position:absolute; top:5px; left:6px; font-family:'IBM Plex Mono', monospace;
+  font-size:9px; color:var(--teal-dark); opacity:0.7;
+}
+
+.floor-dots{ display:flex; gap:4px; margin-top:auto; align-self:center; padding-bottom:2px; flex-wrap:wrap; justify-content:center; }
+.floor-dot{
+  width:7px; height:7px; border-radius:50%; box-shadow:0 0 0 1px rgba(255,255,255,0.6), 0 1px 2px rgba(0,0,0,0.25);
+}
+.floor-dot.green{ background:#22C55E; }
+.floor-dot.red{ background:#E11D2E; }
+
+.legend{ display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; font-size:12px; color:var(--ink-soft); }
+.legend-item{display:flex; align-items:center; gap:6px;}
+.swatch{width:12px; height:12px; border-radius:4px; border:1px solid var(--line);}
+.swatch.available{background:var(--bg);}
+.swatch.partial{background:var(--gold-soft); border-color:var(--gold-line);}
+.swatch.full{background:var(--gold-mid); border-color:var(--gold);}
+.swatch.past{background:var(--green-soft); border-color:#BFD2C0;}
+
+/* ---------- Overlay / Modal (shared) ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(10,25,25,0.55); display:none;
+  align-items:flex-end; justify-content:center; z-index:50;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--surface); border-radius:20px 20px 0 0; max-width:480px; width:100%;
+  max-height:92vh; overflow-y:auto; padding:24px 16px 40px; box-shadow:0 -10px 40px rgba(10,25,25,0.25);
+  animation: slideUp 0.25s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal.wide{max-width:600px;}
+.modal-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px;}
+.modal-date{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 2px; }
+.modal-title{font-family:'Marcellus', serif; font-size:19px; color:var(--teal-dark); margin:0;}
+.close-btn{ background:none; border:none; font-size:28px; color:var(--ink-soft); cursor:pointer; line-height:1; padding:4px 12px; min-height:44px; display:flex; align-items:center; }
+.close-btn:hover{color:var(--ink);}
+
+.field{margin-top:14px;}
+.field label{ display:block; font-size:11.5px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px; }
+.field input, .field textarea, .field select{
+  width:100%; font-family:'Work Sans', sans-serif; font-size:16px; border:1px solid var(--line);
+  border-radius:9px; padding:12px 11px; background:var(--bg); color:var(--ink); resize:vertical; min-height:44px;
+}
+.field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--gold); background:#fff; }
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+
+.pick-choice{display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;}
+.pick-opt{
+  flex:1; min-width:100px; text-align:center; padding:12px 8px; border-radius:10px; border:1px solid var(--line);
+  background:var(--bg); font-size:13px; font-weight:600; cursor:pointer; color:var(--ink-soft); min-height:44px; display:flex; align-items:center; justify-content:center;
+}
+.pick-opt.selected{ border-color:var(--gold); background:var(--gold-soft); color:var(--teal-dark); }
+.pick-opt.disabled{ opacity:0.4; cursor:not-allowed; text-decoration:line-through; }
+
+.booking-card{
+  border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:12px; background:var(--bg);
+}
+.bc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+.bc-slot{
+  font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
+  background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px 9px; color:var(--teal-dark);
+  display:inline-block; margin-bottom:6px;
+}
+.bc-name{font-family:'Marcellus', serif; font-size:16px; color:var(--teal-dark); margin:0 0 2px;}
+.bc-event{font-size:12.5px; color:var(--ink-soft);}
+.bc-pill{
+  font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
+  padding:3px 9px; border-radius:999px; white-space:nowrap;
+}
+.bc-pill.pending{background:var(--gold-soft); color:#7A5B14; border:1px solid var(--gold-line);}
+.bc-pill.released{background:var(--green-soft); color:var(--green); border:1px solid #BFD2C0;}
+.bc-rows{margin-top:8px;}
+.bc-row{display:flex; justify-content:space-between; font-size:12.5px; padding:6px 0; border-bottom:1px solid var(--line); gap:10px;}
+.bc-row:last-child{border-bottom:none;}
+.bc-row .k{color:var(--ink-soft); flex-shrink:0;}
+.bc-row .v{font-weight:600; text-align:right; word-break:break-word;}
+.bc-row .v.mono{font-family:'IBM Plex Mono', monospace; font-weight:500;}
+.bc-row a{color:var(--teal); text-decoration:none; padding:4px 0; display:inline-block;}
+.bc-row a:hover{text-decoration:underline;}
+.bc-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+
+.btn{
+  font-family:'Work Sans', sans-serif; font-weight:600; font-size:13px;
+  padding:12px 14px; border-radius:9px; border:1px solid transparent; cursor:pointer; text-align:center;
+  min-height:44px; display:inline-flex; align-items:center; justify-content:center; flex:1; min-width:80px;
+}
+.btn.block{display:flex; width:100%; margin-top:14px; padding:12px; font-size:14px;}
+.btn.primary{background:var(--teal); color:#fff;}
+.btn.primary:hover{background:var(--teal-dark);}
+.btn.ghost{background:var(--surface); color:var(--ink); border-color:var(--line);}
+.btn.ghost:hover{border-color:var(--gold);}
+.btn.danger{background:var(--rose-soft); color:var(--rose);}
+.btn.danger:hover{background:#E9C4BC;}
+.btn.release{background:var(--green-soft); color:var(--green);}
+.btn.release:hover{background:#CBDECB;}
+.btn.add{background:var(--gold-soft); color:#7A5B14; border-color:var(--gold-line);}
+.btn.add:hover{background:var(--gold-mid);}
+
+.hint{font-size:12px; color:var(--ink-soft); margin-top:8px;}
+.err{color:var(--rose); font-size:12px; margin-top:8px; display:none;}
+.balance-note{font-size:12.5px; margin-top:6px; color:var(--ink-soft);}
+.balance-note b{color:var(--teal-dark);}
+
+/* Overview modal specifics */
+.tab-row{display:flex; gap:4px; margin-top:14px; border-bottom:1px solid var(--line); overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+.ov-tab{
+  font-size:13px; font-weight:600; color:var(--ink-soft); padding:10px 12px; cursor:pointer;
+  border-bottom:2px solid transparent; display:inline-block;
+}
+.ov-tab.active{color:var(--teal-dark); border-bottom-color:var(--gold);}
+.ov-panel{margin-top:14px;}
+.search-result{
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  padding:12px 6px; border-bottom:1px solid var(--line); cursor:pointer;
+}
+.search-result:hover{background:var(--bg);}
+.search-result .sr-left{font-size:13px;}
+.search-result .sr-left .n{font-weight:600; color:var(--teal-dark);}
+.search-result .sr-left .m{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft);}
+.search-result .sr-right{font-size:11px; text-align:right; color:var(--ink-soft); flex-shrink:0;}
+.empty-note{font-size:13px; color:var(--ink-soft); padding:12px 0;}
+
+.footer-note{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:16px; opacity:0.8; padding-bottom:20px; }
+
+/* ---------- Login screen ---------- */
+.login-screen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:16px; background:var(--bg);
+}
+.login-card{
+  width:100%; max-width:380px; background:var(--surface); border-radius:18px;
+  border:1px solid var(--line); box-shadow:var(--shadow); padding:32px 20px;
+  text-align:center;
+}
+.login-card .mark{ width:38px; height:38px; color:var(--gold); margin:0 auto 10px; display:block; }
+.login-card h2{ font-family:'Marcellus', serif; font-size:21px; color:var(--teal-dark); margin:0 0 4px; font-weight:400; }
+.login-card p.sub{ font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; }
+.login-card .field{ text-align:left; }
+.login-card .btn.primary{ width:100%; margin-top:16px; padding:12px; }
+.login-remember{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-soft); text-align:left; min-height:44px; }
+.login-remember input{ width:18px; height:18px; accent-color:var(--teal); }
+.login-err{ color:var(--rose); font-size:12.5px; margin-top:10px; display:none; }
+.login-hint{ font-size:11.5px; color:var(--ink-soft); margin-top:18px; opacity:0.8; }
+
+.btn.whatsapp{ background:#25D366; color:#fff; }
+.btn.whatsapp:hover{ background:#1DA851; }
+
+/* ---------- Receipt paper ---------- */
+.receipt-paper{
+  border:1.5px solid var(--teal-dark); border-radius:4px; padding:16px; margin-top:14px;
+  background:#FEFCF6; position:relative;
+}
+.receipt-paper::before{
+  content:""; position:absolute; inset:5px; border:1px dashed var(--gold-line); border-radius:2px; pointer-events:none;
+}
+.rp-head{ text-align:center; padding-bottom:10px; margin-bottom:10px; border-bottom:2px solid var(--teal-dark); }
+.rp-head .rp-title{ font-family:'Marcellus', serif; font-size:17px; color:var(--teal-dark); margin:0; }
+.rp-head .rp-sub{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); margin:4px 0 0; }
+.rp-ref{ text-align:center; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--gold); letter-spacing:0.06em; margin-bottom:12px; }
+.rp-row{ display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dotted var(--line); font-size:13px; }
+.rp-row:last-child{border-bottom:none;}
+.rp-row .k{color:var(--ink-soft); flex-shrink:0;}
+.rp-row .v{font-weight:600; text-align:right; word-break:break-word;}
+.rp-row .v.mono{font-family:'IBM Plex Mono', monospace; font-weight:500;}
+.rp-divider{ border-top:1px dashed var(--gold-line); margin:10px 0; }
+.rp-footer{ text-align:center; margin-top:14px; font-size:11.5px; color:var(--ink-soft); font-style:italic; }
+
+/* ---------- Accounts summary ---------- */
+.acct-hero{
+  background:linear-gradient(160deg,var(--teal) 0%, var(--teal-dark) 100%);
+  color:#F7F3E8; border-radius:14px; padding:18px 20px; margin-top:4px;
+}
+.acct-hero .lbl{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); opacity:0.9; }
+.acct-hero .num{ font-family:'Marcellus', serif; font-size:28px; margin:4px 0 0; }
+.acct-hero .sub{ font-size:12px; color:#D9E3DE; opacity:0.85; margin-top:6px; }
+
+.acct-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+.acct-card{ background:var(--bg); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:12px; padding:12px 14px; }
+.acct-card.received{border-left-color:var(--green);}
+.acct-card.sd-collected{border-left-color:var(--gold);}
+.acct-card.sd-released{border-left-color:var(--teal);}
+.acct-card.balance-due{border-left-color:var(--rose);}
+.acct-card .num{ font-family:'IBM Plex Mono', monospace; font-size:15px; font-weight:600; color:var(--teal-dark); word-break:break-all; }
+.acct-card .lbl{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; }
+
+#printArea{display:none;}
+
+@media print{
+  body.printing > .app{display:none !important;}
+  body.printing > .overlay{display:none !important;}
+  body.printing #printArea{ display:block; }
+  body.printing .receipt-paper{ margin-top:0; border-color:#333; }
+  body.printing .receipt-paper::before{ border-color:#999; }
+}
+
+/* Desktop Modals Styling rule fallback */
+@media (min-width: 521px) {
+  .overlay {
+    align-items: center;
+    padding: 18px;
+  }
+  .modal {
+    border-radius: 16px;
+    max-height: 88vh;
+    padding: 24px;
+  }
+}
+
+@media (max-width:520px){
+  .row2, .row3{grid-template-columns:1fr; gap:0;}
+  .summary-strip{grid-template-columns:repeat(2,1fr);}
+  .day{aspect-ratio: auto; min-height:55px; justify-content: space-between;}
+  .day .name{display:none;}
+  .acct-grid{grid-template-columns:1fr;}
+  .header-inner{gap:12px;}
+  .header-actions{width:100%;}
+  .header-actions .icon-btn{width:100%;}
+  .bc-actions {flex-direction: column;}
+  .bc-actions .btn {width: 100%;}
+}
+
+@media (max-width:380px) {
+  .grid{gap:4px;}
+  .day{border-radius:9px; padding:4px; min-height: 48px;}
+  .day .num{font-size:11px;}
+  .floor-tab{font-size:12.5px; padding:8px 12px;}
+  .month-label{font-size:17px;}
+  .summary-cell .num{font-size: 13.5px;}
+}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <svg class="mark" viewBox="0 0 100 100" fill="none">
+      <g stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+        <path d="M50 5 L61 39 L95 39 L67 60 L78 94 L50 73 L22 94 L33 60 L5 39 L39 39 Z"/>
+      </g>
+    </svg>
+    <h2>Jamat Khana Booking</h2>
+    <p class="sub">Sign in to manage the booking register</p>
+    <form id="loginForm" autocomplete="on">
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" name="username" autocomplete="username" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="Password"></div>
+      <label class="login-remember"><input type="checkbox" id="rememberMe" checked> Remember me on this device</label>
+      <button class="btn primary" type="submit" id="loginBtn">Sign in</button>
+    </form>
+    <p class="login-err" id="loginErr"></p>
+    <p class="login-hint">Access is limited to admins added in Firebase. Contact the person who set up this app if you need an account.</p>
+  </div>
+</div>
+
+<div class="app" id="appRoot" style="display:none;">
+
+  <div class="header">
+    <div class="header-inner">
+      <svg class="mark" viewBox="0 0 100 100" fill="none">
+        <g stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+          <path d="M50 5 L61 39 L95 39 L67 60 L78 94 L50 73 L22 94 L33 60 L5 39 L39 39 Z"/>
+        </g>
+      </svg>
+      <div class="titles">
+        <p class="eyebrow">Booking Register</p>
+        <h1>Jamat Khana Booking</h1>
+        <p class="subtitle">Ground · First · Second Floor — availability, events &amp; deposit tracking</p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="overviewBtn">Overview &amp; Search</button>
+        <button class="icon-btn" id="logoutBtn">Sign out</button>
+      </div>
+    </div>
+    <div class="floor-row" id="floorRow"></div>
+  </div>
+
+  <div class="card">
+    <div class="cal-head">
+      <div class="month-label" id="monthLabel">—</div>
+      <div class="nav-group">
+        <button class="today-btn" id="todayBtn">Today</button>
+        <button class="nav-btn" id="prevBtn">‹</button>
+        <button class="nav-btn" id="nextBtn">›</button>
+      </div>
+    </div>
+
+    <div class="summary-strip" id="summaryStrip"></div>
+
+    <div class="weekdays" id="weekdays"></div>
+    <div class="grid" id="grid"></div>
+
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <p class="footer-note" id="footerNote">Loading bookings…</p>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
+<div class="overlay" id="overlayOv"><div class="modal wide" id="modalOv"></div></div>
+<div id="printArea"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+
+  // ---------- Firebase setup ----------
+  var firebaseConfig = {
+    apiKey: "AIzaSyB0gFKcuJwlWJyI5eCfgau_8ppYSmGPS4g",
+    authDomain: "jamatkhana-booking.firebaseapp.com",
+    projectId: "jamatkhana-booking",
+    storageBucket: "jamatkhana-booking.firebasestorage.app",
+    messagingSenderId: "939311936636",
+    appId: "1:939311936636:web:58ac3e365137da848145f9",
+    measurementId: "G-X4QQMQEM8N"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+  var auth = firebase.auth();
+  var BOOKINGS_COLLECTION = 'jamatkhana-bookings';
+
+  var FLOORS = [
+    {id:'ground', key:'bookings-ground', label:'Ground Floor'},
+    {id:'first',  key:'bookings-first',  label:'First Floor'},
+    {id:'second', key:'bookings-second', label:'Second Floor'}
+  ];
+  var SLOTS = [
+    {id:'morning', label:'Morning'},
+    {id:'evening', label:'Evening'},
+    {id:'full', label:'Full Day'}
+  ];
+  var EVENT_TYPES = ['Nikah / Wedding','Majlis','Meeting','Birthday / Anniversary','Gyarahvi Sharif','Chaliswa','Other'];
+  var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  var state = {
+    data: { ground:{}, first:{}, second:{} },
+    settings: { 
+      slotsEnabled:false, 
+      ground:{fullDay:'',halfDay:'',cleaning:'',deposit:''}, 
+      first:{fullDay:'',halfDay:'',cleaning:'',deposit:''}, 
+      second:{fullDay:'',halfDay:'',cleaning:'',deposit:''},
+      packageTwoFloorsDeposit: '5000',
+      packageThreeFloorsDeposit: '5000',
+      elecRate: '10',
+      inventoryItems: [
+        { name: 'Chair', rate: '5' },
+        { name: 'Table', rate: '20' },
+        { name: 'Blanket', rate: '30' },
+        { name: 'Gadda', rate: '50' }
+      ]
+    },
+    currentFloor: 'ground',
+    viewYear: new Date().getFullYear(),
+    viewMonth: new Date().getMonth(),
+    loaded: false
+  };
+
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+  function isoDate(y,m,d){ return y+'-'+pad(m+1)+'-'+pad(d); }
+  function todayIso(){ var t=new Date(); return isoDate(t.getFullYear(), t.getMonth(), t.getDate()); }
+  function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+  function money(v){ return '₹ ' + num(v).toLocaleString('en-IN'); }
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function attr(v){ return v ? escapeHtml(String(v)) : ''; }
+  function slotsOn(){ return !!(state.settings && state.settings.slotsEnabled); }
+  function slotLabelOf(b){
+    if(!b || !b.slot) return null;
+    var s = SLOTS.find(function(x){ return x.id===b.slot; });
+    return s ? s.label : b.slot;
+  }
+  
+  function payableTotal(b){ 
+    var total = num(b.totalAmount) + num(b.cleaningCharge) + num(b.sdAmount);
+    if(b.elecCharges) total += num(b.elecCharges);
+    if(b.inventoryCharges) total += num(b.inventoryCharges);
+    return total;
+  }
+  function balanceDueOf(b){ return Math.max(payableTotal(b) - num(b.amountPaid), 0); }
+  function advancePaidOf(b) { return Math.max(num(b.amountPaid) - payableTotal(b), 0); }
+
+  // ---------- Storage (Firebase Firestore) ----------
+  async function loadAll(){
+    var footer = document.getElementById('footerNote');
+    try{
+      var results = await Promise.all(FLOORS.map(function(f){
+        return db.collection(BOOKINGS_COLLECTION).doc(f.key).get();
+      }));
+      results.forEach(function(snap, i){
+        var f = FLOORS[i];
+        var parsed = (snap && snap.exists) ? (snap.data() || {}) : {};
+        Object.keys(parsed).forEach(function(iso){
+          var val = parsed[iso];
+          if(val && !Array.isArray(val)){
+            val.id = val.id || genId();
+            parsed[iso] = [val];
+          }
+        });
+        state.data[f.id] = parsed;
+      });
+      footer.textContent = 'Bookings are stored in the cloud — everyone with this link sees the same calendar.';
+    }catch(e){
+      console.error(e);
+      footer.textContent = 'Could not load saved bookings. Check your internet connection and try refreshing.';
+    }
+    state.loaded = true;
+  }
+
+  async function saveFloor(floorId){
+    var f = FLOORS.find(function(x){ return x.id===floorId; });
+    try{
+      await db.collection(BOOKINGS_COLLECTION).doc(f.key).set(state.data[floorId] || {});
+      return true;
+    }catch(e){
+      console.error(e);
+      alert('Sorry, this booking could not be saved. Please check your connection and try again.');
+      return false;
+    }
+  }
+
+  function defaultSettings(){
+    return { 
+      slotsEnabled:false,
+      packageTwoFloorsDeposit: '5000',
+      packageThreeFloorsDeposit: '5000',
+      elecRate: '10',
+      inventoryItems: [
+        { name: 'Chair', rate: '5' },
+        { name: 'Table', rate: '20' },
+        { name: 'Blanket', rate: '30' },
+        { name: 'Gadda', rate: '50' }
+      ]
+    };
+  }
+
+  async function loadSettings(){
+    try{
+      var snap = await db.collection(BOOKINGS_COLLECTION).doc('settings').get();
+      var loaded = (snap && snap.exists) ? (snap.data() || {}) : {};
+      var merged = defaultSettings();
+      merged.slotsEnabled = !!loaded.slotsEnabled;
+      merged.packageTwoFloorsDeposit = loaded.packageTwoFloorsDeposit !== undefined ? String(loaded.packageTwoFloorsDeposit) : '5000';
+      merged.packageThreeFloorsDeposit = loaded.packageThreeFloorsDeposit !== undefined ? String(loaded.packageThreeFloorsDeposit) : '5000';
+      merged.elecRate = loaded.elecRate !== undefined ? String(loaded.elecRate) : '10';
+      if(loaded.inventoryItems && Array.isArray(loaded.inventoryItems)) {
+        merged.inventoryItems = loaded.inventoryItems;
+      }
+      
+      FLOORS.forEach(function(f){
+        if(loaded[f.id]){
+          var fs = loaded[f.id];
+          if(fs.charge && !fs.fullDay) fs.fullDay = fs.charge;
+          merged[f.id] = { fullDay: fs.fullDay||'', halfDay: fs.halfDay||'', cleaning: fs.cleaning||'', deposit: fs.deposit||'' };
+        }
+      });
+      state.settings = merged;
+    }catch(e){
+      console.error(e);
+      state.settings = defaultSettings();
+    }
+  }
+
+  async function saveSettings(newSettings){
+    try{
+      await db.collection(BOOKINGS_COLLECTION).doc('settings').set(newSettings);
+      state.settings = newSettings;
+      return true;
+    }catch(e){
+      console.error(e);
+      alert('Could not save settings. Please check your connection and try again.');
+      return false;
+    }
+  }
+
+  function dayBookings(floorId, iso){ return (state.data[floorId] && state.data[floorId][iso]) || []; }
+  function takenSlots(list){ return list.map(function(b){ return b.slot || 'full'; }); }
+  function isFullyBooked(list){
+    if(list.length===0) return false;
+    var taken = takenSlots(list);
+    if(taken.indexOf('full') !== -1) return true;
+    return taken.indexOf('morning')!==-1 && taken.indexOf('evening')!==-1;
+  }
+  function availableSlots(list){
+    var taken = takenSlots(list);
+    if(taken.indexOf('full')!==-1) return [];
+    return SLOTS.filter(function(s){
+      if(s.id==='full') return taken.length===0;
+      return taken.indexOf(s.id)===-1;
+    });
+  }
+  function isFloorBookedOnDate(floorId, iso, excludeId){
+    var list = dayBookings(floorId, iso).filter(function(x){ return !(excludeId && x.id===excludeId); });
+    if(slotsOn()) return isFullyBooked(list);
+    return list.length > 0;
+  }
+
+  // ---------- Floor tabs ----------
+  function renderFloorTabs(){
+    var row = document.getElementById('floorRow');
+    row.innerHTML = '';
+    var tabs = FLOORS.concat([{id:'all', label:'All Floors'}]);
+    tabs.forEach(function(f){
+      var btn = document.createElement('button');
+      btn.className = 'floor-tab' + (state.currentFloor===f.id ? ' active' : '');
+      btn.innerHTML = '<span class="dot"></span>' + f.label;
+      btn.onclick = function(){ state.currentFloor = f.id; renderFloorTabs(); renderCalendar(); };
+      row.appendChild(btn);
+    });
+  }
+
+  function renderWeekdays(){
+    document.getElementById('weekdays').innerHTML = WEEKDAYS.map(function(w){ return '<div>'+w+'</div>'; }).join('');
+  }
+
+  function floorLabel(id){
+    var f = FLOORS.find(function(x){ return x.id===id; });
+    return f ? f.label : (id||'');
+  }
+  function bookingFloors(b, fallbackFloorId){ return (b && b.floors && b.floors.length) ? b.floors : [fallbackFloorId]; }
+  function combinedFloorLabel(b, fallbackFloorId){ return bookingFloors(b, fallbackFloorId).map(function(id){ return floorLabel(id); }).join(' + '); }
+
+  // ---------- Month summary ----------
+  function renderSummaryStrip(){
+    var y=state.viewYear, m=state.viewMonth;
+    var count=0, collected=0, balanceDue=0, depositPending=0;
+
+    function tally(b){
+      count++;
+      collected += num(b.amountPaid);
+      balanceDue += balanceDueOf(b);
+      if(!b.sdReleased) depositPending += num(b.sdAmount);
+    }
+
+    if(state.currentFloor==='all'){
+      uniqueBookingsFlat().forEach(function(item){
+        var d = new Date(item.iso+'T00:00:00');
+        if(d.getFullYear()===y && d.getMonth()===m) tally(item.b);
+      });
+    } else {
+      var bookings = state.data[state.currentFloor] || {};
+      Object.keys(bookings).forEach(function(iso){
+        var d = new Date(iso+'T00:00:00');
+        if(d.getFullYear()===y && d.getMonth()===m) bookings[iso].forEach(tally);
+      });
+    }
+
+    var el = document.getElementById('summaryStrip');
+    el.innerHTML =
+      summaryCell(count, 'Bookings this month') +
+      summaryCell(money(collected), 'Collected') +
+      summaryCell(money(balanceDue), 'Balance due') +
+      summaryCell(money(depositPending), 'Deposits pending');
+  }
+  function summaryCell(num, lbl){ return '<div class="summary-cell"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
+
+  function renderLegend(){
+    var el = document.getElementById('legend');
+    if(state.currentFloor==='all'){
+      el.innerHTML = '';
+    } else {
+      var items = ['<div class="legend-item"><span class="swatch available"></span>Available</div>'];
+      if(slotsOn()) items.push('<div class="legend-item"><span class="swatch partial"></span>One slot booked</div>');
+      items.push('<div class="legend-item"><span class="swatch full"></span>Booked</div>');
+      items.push('<div class="legend-item"><span class="swatch past"></span>Past Booking</div>');
+      el.innerHTML = items.join('');
+    }
+  }
+
+  // ---------- Calendar ----------
+  function renderCalendar(){
+    var y = state.viewYear, m = state.viewMonth;
+    document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
+    renderSummaryStrip();
+    renderLegend();
+
+    var grid = document.getElementById('grid');
+    grid.innerHTML = '';
+
+    var firstDow = new Date(y, m, 1).getDay();
+    var daysInMonth = new Date(y, m+1, 0).getDate();
+    var daysInPrev = new Date(y, m, 0).getDate();
+    var todayStr = todayIso();
+    var totalCells = Math.ceil((firstDow + daysInMonth) / 7) * 7;
+
+    for(var i=0; i<totalCells; i++){
+      var cell = document.createElement('div');
+      var dayNum, cellYear, cellMonth, muted = false;
+
+      if(i < firstDow){
+        dayNum = daysInPrev - firstDow + 1 + i; cellMonth = m-1; cellYear = y;
+        if(cellMonth < 0){ cellMonth = 11; cellYear = y-1; } muted = true;
+      } else if(i >= firstDow + daysInMonth){
+        dayNum = i - firstDow - daysInMonth + 1; cellMonth = m+1; cellYear = y;
+        if(cellMonth > 11){ cellMonth = 0; cellYear = y+1; } muted = true;
+      } else {
+        dayNum = i - firstDow + 1; cellMonth = m; cellYear = y;
+      }
+
+      var iso = isoDate(cellYear, cellMonth, dayNum);
+      cell.className = 'day' + (muted ? ' muted' : '');
+      if(iso === todayStr) cell.className += ' is-today';
+
+      if(state.currentFloor==='all'){
+        var groundBooked = dayBookings('ground', iso).length > 0;
+        var firstBooked = dayBookings('first', iso).length > 0;
+        var secondBooked = dayBookings('second', iso).length > 0;
+
+        var gColor = groundBooked ? 'red' : 'green';
+        var fColor = firstBooked ? 'red' : 'green';
+        var sColor = secondBooked ? 'red' : 'green';
+
+        if (groundBooked || firstBooked || secondBooked) {
+          if (iso < todayStr) {
+            cell.className += ' past-highlight';
+          } else {
+            cell.className += ' is-booked';
+          }
+        }
+
+        var html = '<span class="num">'+dayNum+'</span>';
+        
+        if (iso >= todayStr) {
+          html += '<div style="position:absolute; top:6px; right:6px; display:flex; flex-direction:column; gap:3px;">' +
+                    '<span class="floor-dot ' + sColor + '"></span>' +
+                    '<span class="floor-dot ' + fColor + '"></span>' +
+                    '<span class="floor-dot ' + gColor + '"></span>' +
+                  '</div>';
+        }
+        
+        cell.innerHTML = html;
+      } else {
+        var list = dayBookings(state.currentFloor, iso);
+        var html = '<span class="num">'+dayNum+'</span>';
+        if(list.length){
+          if (iso < todayStr) {
+            cell.className += ' past-highlight';
+          } else {
+            if(slotsOn()){
+              var full = isFullyBooked(list);
+              cell.className += ' is-booked ' + (full ? '' : 'partial');
+            } else {
+              cell.className += ' is-booked';
+            }
+          }
+          
+          if(list.length>1) html += '<span class="count-badge">×'+list.length+'</span>';
+          html += '<span class="name">'+escapeHtml(list[0].name)+(list.length>1?' +'+(list.length-1):'')+'</span>';
+        }
+        cell.innerHTML = html;
+      }
+
+      if(!muted){
+        cell.addEventListener('click', function(isoArg){ return function(){ openDayModal(isoArg); }; }(iso));
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  // ---------- Receipt & WhatsApp helpers ----------
+  function refCode(b){ return 'JK-' + (b.id || '').slice(-6).toUpperCase(); }
+
+  function normalizePhone(mobile){
+    var digits = (mobile||'').replace(/\D/g,'');
+    if(digits.length===10) return '91'+digits;
+    if(digits.length===11 && digits[0]==='0') return '91'+digits.slice(1);
+    return digits;
+  }
+
+  var buildReceiptPaperHtml = function(iso, floorId, b){
+    var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : b.eventType;
+    var total = payableTotal(b);
+    var balance = balanceDueOf(b);
+    var advance = advancePaidOf(b);
+    var generatedOn = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+    
+    var paymentRows = rpRow('Floor charges', money(b.totalAmount), true) +
+      rpRow('Cleaning charge', money(b.cleaningCharge), true) +
+      rpRow('Security deposit', money(b.sdAmount), true);
+      
+    if(b.elecCharges) paymentRows += rpRow('Electricity charges', money(b.elecCharges), true);
+    if(b.inventoryCharges) paymentRows += rpRow('Inventory charges', money(b.inventoryCharges), true);
+    
+    paymentRows += rpRow('Total Bill Amount', money(total), true) +
+      rpRow('Amount paid', money(b.amountPaid), true) +
+      rpRow('Balance Due', money(balance), true);
+
+    if(advance > 0) {
+      paymentRows += rpRow('Advance / Excess', money(advance), true);
+    }
+
+    return '<div class="receipt-paper">'+
+      '<div class="rp-head"><p class="rp-title">Jamat Khana Booking Confirmation</p>'+
+        '<p class="rp-sub">'+combinedFloorLabel(b, floorId)+'</p></div>'+
+      '<p class="rp-ref">Ref '+refCode(b)+'</p>'+
+      rpRow('Date', fmtDateLabel(iso)) +
+      (slotLabelOf(b) ? rpRow('Time slot', slotLabelOf(b)) : '') +
+      rpRow('Event / purpose', eventLabel||'—') +
+      '<div class="rp-divider"></div>'+
+      rpRow('Booked by', escapeHtml(b.name)) +
+      rpRow('Mobile', escapeHtml(b.mobile), true) +
+      rpRow('Address', escapeHtml(b.address)||'—') +
+      '<div class="rp-divider"></div>'+
+      paymentRows +
+      (b.paymentDetails ? rpRow('Payment details', escapeHtml(b.paymentDetails)) : '') +
+      '<p class="rp-footer">Generated on '+generatedOn+' · Please retain for your records</p>'+
+    '</div>';
+  }
+  function rpRow(k,v,mono){ return '<div class="rp-row"><span class="k">'+k+'</span><span class="v'+(mono?' mono':'')+'">'+(v||'—')+'</span></div>'; }
+
+  function buildWhatsappText(iso, floorId, b){
+    var eventLabel = b.eventType==='Other' ? (b.eventTypeOther||'Other') : b.eventType;
+    var balance = balanceDueOf(b);
+    var advance = advancePaidOf(b);
+    var text = 'Jamat Khana Booking Confirmation\n'+
+      'Ref: '+refCode(b)+'\n\n'+
+      'Dear '+b.name+',\n'+
+      'Your booking configuration updated:\n\n'+
+      'Floor: '+combinedFloorLabel(b, floorId)+'\n'+
+      'Date: '+fmtDateLabel(iso)+'\n'+
+      (slotLabelOf(b) ? 'Slot: '+slotLabelOf(b)+'\n' : '')+
+      'Event: '+(eventLabel||'—')+'\n\n'+
+      'Floor charges: '+money(b.totalAmount)+'\n'+
+      'Cleaning charge: '+money(b.cleaningCharge)+'\n'+
+      'Security deposit: '+money(b.sdAmount)+'\n';
+      
+    if(b.elecCharges) text += 'Electricity: ' + money(b.elecCharges) + '\n';
+    if(b.inventoryCharges) text += 'Rent Items: ' + money(b.inventoryCharges) + '\n';
+    
+    text += 'Total amount: '+money(payableTotal(b))+'\n'+
+      'Amount paid: '+money(b.amountPaid)+'\n'+
+      'Balance: '+money(balance)+'\n';
+      
+    if(advance > 0) {
+      text += 'Excess Balance: ' + money(advance) + '\n';
+    }
+    
+    text += '\nPlease keep this message for your reference. Thank you!';
+    return text;
+  }
+
+  function printReceipt(iso, floorId, b){
+    document.getElementById('printArea').innerHTML = buildReceiptPaperHtml(iso, floorId, b);
+    document.body.classList.add('printing');
+    window.print();
+  }
+  window.addEventListener('afterprint', function(){
+    document.body.classList.remove('printing');
+    document.getElementById('printArea').innerHTML = '';
+  });
+
+  function renderReceiptView(iso, floorId, b, justCreated){
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+(justCreated?'Booking confirmed':'Receipt')+'</p>'+
+        '<h2 class="modal-title">Confirmation slip</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      buildReceiptPaperHtml(iso, floorId, b)+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="mBack">Back to day</button>'+
+        '<button class="btn primary" id="mPrint">Print / Save as PDF</button>'+
+      '</div>'+
+      '<a class="btn whatsapp block" id="waLink" target="_blank" rel="noopener">Share on WhatsApp</a>'+
+      '<p class="hint">Opens the booker\u2019s WhatsApp chat with the confirmation pre-filled — just press send.</p>';
+
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('mBack').onclick = function(){ renderDayView(iso, floorId); };
+    document.getElementById('mPrint').onclick = function(){ printReceipt(iso, floorId, b); };
+    document.getElementById('waLink').href = 'https://wa.me/'+normalizePhone(b.mobile)+'?text='+encodeURIComponent(buildWhatsappText(iso, floorId, b));
+  }
+
+  function fmtDateLabel(iso){
+    var parts = iso.split('-').map(Number);
+    var d = new Date(parts[0], parts[1]-1, parts[2]);
+    return d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+
+  // ---------- Day modal: list of bookings + add ----------
+  var overlay = document.getElementById('overlay');
+  var modalBox = document.getElementById('modalBox');
+  function closeModal(){ overlay.classList.remove('show'); modalBox.innerHTML=''; }
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeModal(); });
+
+  function openDayModal(iso, floorOverride){
+    var floorId = floorOverride || state.currentFloor;
+    if(floorId === 'all'){
+      renderAllFloorsDayView(iso);
+    } else {
+      renderDayView(iso, floorId);
+    }
+    overlay.classList.add('show');
+  }
+
+  function renderDayView(iso, floorId){
+    var list = dayBookings(floorId, iso);
+    var cardsHtml = list.map(function(b){ return bookingCardHtml(b, floorId); }).join('');
+    var full = slotsOn() ? isFullyBooked(list) : (list.length>0);
+    var avail = slotsOn() ? availableSlots(list) : [];
+    var addLabel = (slotsOn() && avail.length) ? '+ Add booking ('+avail.map(function(s){return s.label;}).join(' / ')+' available)' : '+ Add booking';
+
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+' · '+floorLabel(floorId)+'</p>'+
+        '<h2 class="modal-title">'+(list.length? 'Booking for this day' : 'No booking yet')+'</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      (cardsHtml || '<p class="hint">This day is open on '+floorLabel(floorId)+'.</p>')+
+      (full ? (list.length ? '<p class="hint" style="margin-top:14px;">This day is fully booked.</p>' : '') : '<button class="btn add block" id="mAdd">'+addLabel+'</button>');
+
+    document.getElementById('mClose').onclick = closeModal;
+    var addBtn = document.getElementById('mAdd');
+    if(addBtn) addBtn.onclick = function(){ renderFormView(iso, floorId, null); };
+
+    list.forEach(function(b){
+      var bid = b.id || genId();
+      var rcptBtn = document.getElementById('rcpt-'+bid);
+      var editBtn = document.getElementById('edit-'+bid);
+      var relBtn = document.getElementById('rel-'+bid);
+      var cancelBtn = document.getElementById('can-'+bid);
+      if(rcptBtn) rcptBtn.onclick = function(){ renderReceiptView(iso, floorId, b, false); };
+      if(editBtn) editBtn.onclick = function(){ renderFormView(iso, floorId, b); };
+      if(relBtn) relBtn.onclick = function(){ renderReleaseView(iso, floorId, b); };
+      if(cancelBtn) cancelBtn.onclick = function(){ handleCancelBooking(iso, floorId, bid); };
+    });
+  }
+
+  function renderAllFloorsDayView(iso){
+    var sectionsHtml = FLOORS.map(function(f){
+      var list = dayBookings(f.id, iso);
+      var full = slotsOn() ? isFullyBooked(list) : (list.length>0);
+      var cardsHtml = list.map(function(b){ return bookingCardHtml(b, f.id, '-af'+f.id); }).join('');
+      var openMsg = (!full && list.length===0) ? '<p class="hint" style="margin:4px 0 10px;">Open — no booking on this floor.</p>' : '';
+      var addBtn = full ? '' : '<button class="btn add block" id="addAll-'+f.id+'">+ Add booking on '+f.label+'</button>';
+      return '<div style="margin-top:16px;">'+
+        '<p style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 6px;">'+f.label+'</p>'+
+        cardsHtml+openMsg+addBtn+'</div>';
+    }).join('');
+
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+'</p><h2 class="modal-title">All floors</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+ sectionsHtml;
+
+    document.getElementById('mClose').onclick = closeModal;
+
+    FLOORS.forEach(function(f){
+      var list = dayBookings(f.id, iso);
+      var addBtn = document.getElementById('addAll-'+f.id);
+      if(addBtn) addBtn.onclick = function(){ renderFormView(iso, f.id, null); };
+      list.forEach(function(b){
+        var suf = '-af'+f.id;
+        var bid = b.id || genId();
+        var rcptBtn = document.getElementById('rcpt-'+bid+suf);
+        var editBtn = document.getElementById('edit-'+bid+suf);
+        var relBtn = document.getElementById('rel-'+bid+suf);
+        var cancelBtn = document.getElementById('can-'+bid+suf);
+        if(rcptBtn) rcptBtn.onclick = function(){ renderReceiptView(iso, f.id, b, false); };
+        if(editBtn) editBtn.onclick = function(){ renderFormView(iso, f.id, b); };
+        if(relBtn) relBtn.onclick = function(){ renderReleaseView(iso, f.id, b); };
+        if(cancelBtn) cancelBtn.onclick = function(){ handleCancelBooking(iso, f.id, bid); };
+      });
+    });
+  }
+
+  function bookingCardHtml(b, floorId, idSuffix){
+    idSuffix = idSuffix || '';
+    var total = payableTotal(b);
+    var balance = balanceDueOf(b);
+    var advance = advancePaidOf(b);
+    var eventLabel = b.eventType === 'Other' ? (b.eventTypeOther || 'Other') : b.eventType;
+    var floors = bookingFloors(b, floorId);
+    var floorsNote = floors.length>1 ? '<div class="bc-event" style="margin-top:2px;">Booked together on: '+floors.map(function(id){return floorLabel(id);}).join(' + ')+'</div>' : '';
+    var slotBadge = slotLabelOf(b) ? '<span class="bc-slot">'+slotLabelOf(b)+'</span>' : '';
+    var bid = b.id || genId();
+    
+    var dynamicStatusRows = bcRow('Floor charges', money(b.totalAmount), true)+
+        bcRow('Cleaning charge', money(b.cleaningCharge), true)+
+        bcRow('Security deposit', money(b.sdAmount), true);
+        
+    if(b.elecCharges) dynamicStatusRows += bcRow('Electricity charges', money(b.elecCharges), true);
+    if(b.inventoryCharges) dynamicStatusRows += bcRow('Inventory items charges', money(b.inventoryCharges), true);
+
+    dynamicStatusRows += bcRow('Total configuration', money(total), true)+
+        bcRow('Amount paid till now', money(b.amountPaid), true)+
+        bcRow('Current balance tracking', money(balance), true);
+
+    if (advance > 0) {
+      dynamicStatusRows += bcRow('Advance allocation match', money(advance), true);
+    }
+
+    return '<div class="booking-card">'+
+      '<div class="bc-head">'+
+        '<div>'+slotBadge+'<div class="bc-name">'+escapeHtml(b.name)+'</div>'+
+        '<div class="bc-event">'+escapeHtml(eventLabel||'—')+'</div>'+
+        floorsNote+
+        '</div>'+
+        '<span class="bc-pill '+(b.sdReleased?'released':'pending')+'">'+(b.sdReleased?'Billing Complete':'Final Billing Pending')+'</span>'+
+      '</div>'+
+      '<div class="bc-rows">'+
+        bcRow('Mobile', '<a href="tel:'+attr(b.mobile)+'">'+escapeHtml(b.mobile)+'</a>', true)+
+        bcRow('Address', escapeHtml(b.address)||'—')+
+        dynamicStatusRows+
+        (b.paymentDetails ? bcRow('Payment details', escapeHtml(b.paymentDetails)) : '')+
+        (b.sdReleased ? bcRow('Billing processed on', escapeHtml(b.sdReleaseDate||'—')) : '')+
+        (b.sdReleaseNotes ? bcRow('Billing notes', escapeHtml(b.sdReleaseNotes)) : '')+
+      '</div>'+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="rcpt-'+bid+idSuffix+'">Receipt</button>'+
+        '<button class="btn ghost" id="edit-'+bid+idSuffix+'">Edit</button>'+
+        (b.sdReleased ? '' : '<button class="btn release" id="rel-'+bid+idSuffix+'">Final Billing</button>')+
+        '<button class="btn danger" id="can-'+bid+idSuffix+'">Cancel</button>'+
+      '</div>'+
+    '</div>';
+  }
+  function bcRow(k,v,mono){ return '<div class="bc-row"><span class="k">'+k+'</span><span class="v'+(mono?' mono':'')+'">'+(v||'—')+'</span></div>'; }
+
+  // ---------- Final Billing Overlay ----------
+  function renderReleaseView(iso, floorId, b){
+    var today = todayIso();
+    var itemsList = (state.settings && state.settings.inventoryItems) || [];
+    var currentItemUsage = b.inventoryQuantities || {};
+    
+    var itemsHtml = itemsList.map(function(item, idx){
+      var qty = currentItemUsage[item.name] || 0;
+      return '<div class="field" style="margin-top:8px;">' +
+               '<label>' + escapeHtml(item.name) + ' Used (Rate: ' + money(item.rate) + '/pc)</label>' +
+               '<input type="number" class="rel-inv-input" data-name="' + attr(item.name) + '" data-rate="' + attr(item.rate) + '" value="' + qty + '" min="0" placeholder="0">' +
+             '</div>';
+    }).join('');
+
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+' · '+floorLabel(floorId)+'</p>'+
+        '<h2 class="modal-title">Final Billing Processing</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      '<div style="max-height: 65vh; overflow-y:auto; padding-right:4px;">'+
+        '<div class="booking-card" style="margin-top:0; background: var(--surface);">'+
+          '<h3>Base Room Charges</h3>'+
+          bcRow('Venue Rent Amount', money(b.totalAmount), true) +
+          bcRow('Room Cleaning Fee', money(b.cleaningCharge), true) +
+          bcRow('Deposit Collected In Hand', money(b.sdAmount), true) +
+        '</div>'+
+        
+        '<div class="booking-card" style="margin-top:10px;">'+
+          '<h3>Electricity Meter Tracker</h3>'+
+          '<p class="hint">Rate per unit configured: ' + money((state.settings && state.settings.elecRate) || 10) + '</p>'+
+          '<div class="row2">'+
+            '<div class="field" style="margin-top:0;"><label>Opening Meter Reading</label><input type="number" id="fElecOpen" value="' + attr(b.elecOpen || '') + '" placeholder="0"></div>'+
+            '<div class="field" style="margin-top:0;"><label>Closing Meter Reading</label><input type="number" id="fElecClose" value="' + attr(b.elecClose || '') + '" placeholder="0"></div>'+
+          '</div>'+
+        '</div>'+
+
+        '<div class="booking-card" style="margin-top:10px;">'+
+          '<h3>Inventory Rental Logistics</h3>'+
+          itemsHtml +
+        '</div>'+
+
+        '<div class="booking-card" style="margin-top:10px; background:var(--gold-soft); border:1px solid var(--gold-line);">'+
+          '<h3>Summary Calculation Breakdown</h3>'+
+          bcRow('Electricity Add-on Amount', '<span id="calcElec">₹ 0</span>', true)+
+          bcRow('Inventory Rental Subtotal', '<span id="calcInv">₹ 0</span>', true)+
+          bcRow('Net Adjustments Bill Sum', '<span id="calcGrandBill">₹ 0</span>', true)+
+          bcRow('Already Pre-Paid Match', money(b.amountPaid), true)+
+          '<div class="rp-divider"></div>'+
+          '<div id="depositOutcomeBox" style="padding:10px; border-radius:8px; font-weight:bold; text-align:center; font-size:14px; margin-top:5px;"></div>'+
+        '</div>'+
+
+        '<div class="field"><label>Final Billing Settlement Processing Date</label><input type="date" id="fReleaseDate" value="'+today+'"></div>'+
+        '<div class="field"><label>Settlement Reference Notes</label><textarea id="fReleaseNotes" rows="2" placeholder="e.g. Accounts finalized.">'+(b.sdReleaseNotes||'')+'</textarea></div>'+
+      '</div>'+
+      '<div class="bc-actions" style="margin-top:14px;">'+
+        '<button class="btn ghost" id="mBack">Back</button>'+
+        '<button class="btn primary" id="mConfirmRelease">Finalize &amp; Lock Settlement</button>'+
+      '</div>';
+
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('mBack').onclick = function(){ renderDayView(iso, floorId); };
+
+    var elecOpenInput = document.getElementById('fElecOpen');
+    var elecCloseInput = document.getElementById('fElecClose');
+    var invInputs = document.querySelectorAll('.rel-inv-input');
+
+    function recaclulateReleaseMetrics() {
+      var op = num(elecOpenInput.value);
+      var cl = num(elecCloseInput.value);
+      var eRate = num((state.settings && state.settings.elecRate) || 10);
+      var eCost = 0;
+      if (cl >= op && cl > 0) {
+        eCost = (cl - op) * eRate;
+      }
+      document.getElementById('calcElec').textContent = money(eCost);
+
+      var invSubtotal = 0;
+      invInputs.forEach(function(input){
+        var itemQty = num(input.value);
+        var itemRate = num(input.getAttribute('data-rate'));
+        invSubtotal += (itemQty * itemRate);
+      });
+      document.getElementById('calcInv').textContent = money(invSubtotal);
+
+      var baseVenueCharges = num(b.totalAmount) + num(b.cleaningCharge);
+      var netAbsoluteBillPayload = baseVenueCharges + eCost + invSubtotal;
+      document.getElementById('calcGrandBill').textContent = money(netAbsoluteBillPayload);
+
+      var originalDepositHeld = num(b.sdAmount);
+      var customerTotalCashPaidIn = num(b.amountPaid); 
+
+      var totalOutstandingBalanceToMatch = netAbsoluteBillPayload - customerTotalCashPaidIn;
+      var outBox = document.getElementById('depositOutcomeBox');
+
+      if (totalOutstandingBalanceToMatch === 0) {
+        outBox.style.background = 'var(--green-soft)';
+        outBox.style.color = 'var(--green)';
+        outBox.innerHTML = 'Account Settled Perfectly!<br>Security Deposit Released completely. No refund/excess due.';
+      } else if (totalOutstandingBalanceToMatch < 0) {
+        var refundableVolume = Math.abs(totalOutstandingBalanceToMatch);
+        outBox.style.background = '#d1e7dd';
+        outBox.style.color = '#0f5132';
+        outBox.innerHTML = 'REFUNDABLE AMOUNT TO CLIENT: ' + money(refundableVolume) + '<br><span style="font-size:11px; font-weight:normal;">(Deposit securely covers bills. Return this excess cash to customer)</span>';
+      } else {
+        outBox.style.background = 'var(--rose-soft)';
+        outBox.style.color = 'var(--rose)';
+        outBox.innerHTML = 'ADDITIONAL EXCESS CHARGE DUE: ' + money(totalOutstandingBalanceToMatch) + '<br><span style="font-size:11px; font-weight:normal;">(Deposit consumed completely. Collect this extra amount from customer)</span>';
+      }
+    }
+
+    elecOpenInput.oninput = recaclulateReleaseMetrics;
+    elecCloseInput.oninput = recaclulateReleaseMetrics;
+    invInputs.forEach(function(i){ i.oninput = recaclulateReleaseMetrics; });
+    recaclulateReleaseMetrics();
+
+    document.getElementById('mConfirmRelease').onclick = async function(){
+      var op = num(elecOpenInput.value);
+      var cl = num(elecCloseInput.value);
+      var eRate = num((state.settings && state.settings.elecRate) || 10);
+      var eCost = (cl >= op && cl > 0) ? (cl - op) * eRate : 0;
+
+      var invSubtotal = 0;
+      var invQuantities = {};
+      invInputs.forEach(function(input){
+        var name = input.getAttribute('data-name');
+        var itemQty = num(input.value);
+        var itemRate = num(input.getAttribute('data-rate'));
+        invSubtotal += (itemQty * itemRate);
+        invQuantities[name] = itemQty;
+      });
+
+      b.sdReleased = true;
+      b.sdReleaseDate = document.getElementById('fReleaseDate').value || today;
+      b.sdReleaseNotes = document.getElementById('fReleaseNotes').value.trim();
+      
+      b.elecOpen = op;
+      b.elecClose = cl;
+      b.elecCharges = eCost;
+      b.inventoryCharges = invSubtotal;
+      b.inventoryQuantities = invQuantities;
+
+      var floors = bookingFloors(b, floorId);
+      floors.forEach(function(fid){
+        var arr = (state.data[fid] && state.data[fid][iso]) || [];
+        var idx = arr.findIndex(function(x){ return x.id===b.id; });
+        if(idx>-1) arr[idx] = b;
+      });
+      var results = await Promise.all(floors.map(saveFloor));
+      var ok = results.every(Boolean);
+      if(ok){ renderCalendar(); renderDayView(iso, floorId); }
+    };
+  }
+
+  function renderFormView(iso, ctxFloorId, existing){
+    var b = existing || {};
+    var isEdit = !!existing;
+    var onSlots = slotsOn();
+    var selectedFloors = isEdit ? bookingFloors(b, ctxFloorId).slice() : [ctxFloorId];
+    var selectedSlot = onSlots ? (isEdit ? (b.slot || 'full') : null) : null;
+    
+    var baseFloor = isEdit ? num(b.totalAmount) : 0;
+    var baseCleaning = isEdit ? num(b.cleaningCharge) : 0;
+    var baseDeposit = isEdit ? num(b.sdAmount) : 0;
+
+    var floorChoiceHtml = FLOORS.map(function(f){
+      var sel = selectedFloors.indexOf(f.id)!==-1;
+      var bookedElsewhere = isFloorBookedOnDate(f.id, iso, isEdit ? b.id : null) && !sel;
+      return '<div class="pick-opt'+(sel?' selected':'')+(bookedElsewhere?' disabled':'')+'" data-floor="' + f.id + '">' + f.label + (bookedElsewhere ? ' (booked)' : '') + '</div>';
+    }).join('');
+
+    var eventOptionsHtml = EVENT_TYPES.map(function(e){
+      return '<option value="'+e+'" '+(b.eventType===e?'selected':'')+'>'+e+'</option>';
+    }).join('');
+
+    modalBox.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">'+fmtDateLabel(iso)+'</p>'+
+        '<h2 class="modal-title">'+(isEdit?'Edit booking':'New booking')+'</h2></div>'+
+        '<button class="close-btn" id="mClose">&times;</button>'+
+      '</div>'+
+      '<div style="max-height:72vh; overflow-y:auto; padding-right:4px;">'+
+        '<div class="field"><label>Floor(s)</label><div class="pick-choice" id="floorChoice">'+floorChoiceHtml+'</div>'+
+        '<p class="hint" style="margin-top:6px;">Select more than one to book floors together for the same event.</p></div>'+
+        (onSlots ? '<div class="field"><label>Time slot</label><div class="pick-choice" id="slotChoice"></div></div>' : '')+
+        '<div class="field"><label>Event / purpose</label><select id="fEventType">'+eventOptionsHtml+'</select></div>'+
+        '<div class="field" id="fEventOtherWrap" style="'+(b.eventType==='Other'?'':'display:none;')+'"><label>Please specify</label><input type="text" id="fEventOther" value="'+attr(b.eventTypeOther)+'" placeholder="Describe the event"></div>'+
+        '<div class="field"><label>Name of person booking</label><input type="text" id="fName" value="'+attr(b.name)+'" placeholder="Full name"></div>'+
+        '<div class="field"><label>Mobile number</label><input type="tel" id="fMobile" value="'+attr(b.mobile)+'" placeholder="10-digit mobile number"></div>'+
+        '<div class="field"><label>Address</label><textarea id="fAddress" rows="2" placeholder="Full address">'+(b.address||'')+'</textarea></div>'+
+        '<div class="row2">'+
+          '<div class="field" style="margin-top:0;"><label>Floor charges (₹)</label><input type="number" id="fTotalAmount" value="'+attr(b.totalAmount)+'" placeholder="0"></div>'+
+          '<div class="field" style="margin-top:0;"><label>Cleaning charge (₹)</label><input type="number" id="fCleaningCharge" value="'+attr(b.cleaningCharge)+'" placeholder="0"></div>'+
+        '</div>'+
+        '<div class="row2" style="margin-top:14px;">'+
+          '<div class="field" style="margin-top:0;"><label>Deposit (₹)</label><input type="number" id="fSdAmount" value="'+attr(b.sdAmount)+'" placeholder="0"></div>'+
+          '<div class="field" style="margin-top:0;"><label>Total (₹)</label><input type="text" id="fGrandTotalDisplay" value="0" readonly style="opacity: 0.8; font-weight: bold; background: #e2dcc8;"></div>'+
+        '</div>'+
+        '<div class="field"><label>Amount paid (₹)</label><input type="number" id="fAmountPaid" value="'+attr(b.amountPaid)+'" placeholder="0"></div>'+
+        '<p class="balance-note" id="balanceNote"></p>'+
+        '<div class="field"><label>Payment details</label><textarea id="fPaymentDetails" rows="2" placeholder="e.g. UPI, cash reference notes">'+(b.paymentDetails||'')+'</textarea></div>'+
+        '<p class="err" id="fErr">Please fill all mandatory configuration modules.</p>'+
+      '</div>'+
+      '<div class="bc-actions">'+
+        '<button class="btn ghost" id="mCancelForm">Cancel</button>'+
+        '<button class="btn primary" id="mSave">'+(isEdit?'Save changes':'Confirm booking')+'</button>'+
+      '</div>';
+
+    function computeAvailForSelectedFloors(){
+      if(selectedFloors.length===0) return [];
+      var perFloorAvailIds = selectedFloors.map(function(fid){
+        var list = dayBookings(fid, iso).filter(function(x){ return !(isEdit && x.id===b.id); });
+        return availableSlots(list).map(function(s){ return s.id; });
+      });
+      return SLOTS.filter(function(s){
+        return perFloorAvailIds.every(function(ids){ return ids.indexOf(s.id)!==-1; });
+      });
+    }
+
+    function computeDefaultAmounts(){
+      var total = 0, cleaning = 0, deposit = 0;
+      selectedFloors.forEach(function(fid){
+        var s = (state.settings && state.settings[fid]) || {};
+        if(onSlots){
+          if(selectedSlot==='full') total += num(s.fullDay);
+          else if(selectedSlot) total += num(s.halfDay);
+        } else {
+          total += num(s.fullDay);
+        }
+        cleaning += num(s.cleaning);
+        deposit += num(s.deposit);
+      });
+
+      if (state.settings) {
+        if (selectedFloors.length === 2 && state.settings.packageTwoFloorsDeposit) {
+          deposit = num(state.settings.packageTwoFloorsDeposit);
+        } else if (selectedFloors.length === 3 && state.settings.packageThreeFloorsDeposit) {
+          deposit = num(state.settings.packageThreeFloorsDeposit);
+        }
+      }
+      return { total: total, cleaning: cleaning, deposit: deposit };
+    }
+
+    function updateAutoAmounts(){
+      var defaults = computeDefaultAmounts();
+      if(!isEdit) {
+        baseFloor = defaults.total;
+        baseCleaning = defaults.cleaning;
+        baseDeposit = defaults.deposit;
+        document.getElementById('fTotalAmount').value = baseFloor || '';
+        document.getElementById('fCleaningCharge').value = baseCleaning || '';
+        document.getElementById('fSdAmount').value = baseDeposit || '';
+      } else {
+        baseFloor = num(document.getElementById('fTotalAmount').value);
+        baseCleaning = num(document.getElementById('fCleaningCharge').value);
+        baseDeposit = num(document.getElementById('fSdAmount').value);
+      }
+      applyPaidAllocation();
+    }
+
+    function renderSlotChoiceUI(){
+      var availNow = computeAvailForSelectedFloors();
+      if(!availNow.some(function(s){ return s.id===selectedSlot; })){
+        selectedSlot = (availNow.length===1) ? availNow[0].id : null;
+      }
+      document.getElementById('slotChoice').innerHTML = SLOTS.map(function(s){
+        var enabled = availNow.some(function(a){ return a.id===s.id; });
+        var sel = s.id===selectedSlot;
+        return '<div class="pick-opt'+(sel?' selected':'')+(!enabled?' disabled':'')+'" data-slot="'+s.id+'">'+s.label+'</div>';
+      }).join('');
+      document.querySelectorAll('#slotChoice .pick-opt').forEach(function(opt){
+        opt.onclick = function(){
+          if(opt.classList.contains('disabled')) return;
+          selectedSlot = opt.getAttribute('data-slot');
+          renderSlotChoiceUI();
+        };
+      });
+      updateAutoAmounts();
+    }
+
+    document.querySelectorAll('#floorChoice .pick-opt').forEach(function(opt){
+      opt.onclick = function(){
+        if(opt.classList.contains('disabled')) return;
+        var fid = opt.getAttribute('data-floor');
+        var idx = selectedFloors.indexOf(fid);
+        if(idx>-1){
+          if(selectedFloors.length===1) return;
+          selectedFloors.splice(idx,1);
+          opt.classList.remove('selected');
+        } else {
+          selectedFloors.push(fid);
+          opt.classList.add('selected');
+        }
+        if(onSlots) renderSlotChoiceUI(); else updateAutoAmounts();
+      };
+    });
+
+    var eventSelect = document.getElementById('fEventType');
+    var otherWrap = document.getElementById('fEventOtherWrap');
+    eventSelect.onchange = function(){ otherWrap.style.display = eventSelect.value==='Other' ? '' : 'none'; };
+
+    function applyPaidAllocation(){
+      var floor = num(document.getElementById('fTotalAmount').value);
+      var cleaning = num(document.getElementById('fCleaningCharge').value);
+      var deposit = num(document.getElementById('fSdAmount').value);
+      var grandTotal = floor + cleaning + deposit;
+      
+      document.getElementById('fGrandTotalDisplay').value = grandTotal;
+      var paidInput = document.getElementById('fAmountPaid');
+      var paid = num(paidInput.value);
+      var balanceNote = document.getElementById('balanceNote');
+
+      if(paidInput.value.trim() === '') {
+        balanceNote.innerHTML = 'Total required entry setup: <b>'+money(grandTotal)+'</b>';
+        return;
+      }
+      var diff = paid - grandTotal;
+      if(diff === 0) {
+        balanceNote.innerHTML = 'Status: Fully Paid perfect match.';
+      } else if (diff > 0) {
+        balanceNote.innerHTML = 'Advance payload: <b>' + money(diff) + '</b>';
+      } else {
+        balanceNote.innerHTML = 'Initial balance due entry: <b>' + money(Math.abs(diff)) + '</b>';
+      }
+    }
+
+    document.getElementById('fTotalAmount').addEventListener('input', applyPaidAllocation);
+    document.getElementById('fCleaningCharge').addEventListener('input', applyPaidAllocation);
+    document.getElementById('fSdAmount').addEventListener('input', applyPaidAllocation);
+    document.getElementById('fAmountPaid').addEventListener('input', applyPaidAllocation);
+
+    if(onSlots) renderSlotChoiceUI(); else updateAutoAmounts();
+
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('mCancelForm').onclick = function(){ renderDayView(iso, ctxFloorId); };
+    document.getElementById('mSave').onclick = async function(){
+      var name = document.getElementById('fName').value.trim();
+      var mobile = document.getElementById('fMobile').value.trim();
+      if(!name || !mobile || selectedFloors.length===0 || (onSlots && !selectedSlot)){
+        document.getElementById('fErr').style.display = 'block';
+        return;
+      }
+      
+      var newId = b.id || genId();
+      var record = {
+        id: newId,
+        floors: selectedFloors.slice(),
+        eventType: document.getElementById('fEventType').value,
+        eventTypeOther: document.getElementById('fEventOther').value.trim(),
+        name: name,
+        mobile: mobile,
+        address: document.getElementById('fAddress').value.trim(),
+        totalAmount: document.getElementById('fTotalAmount').value,
+        cleaningCharge: document.getElementById('fCleaningCharge').value,
+        amountPaid: document.getElementById('fAmountPaid').value,
+        sdAmount: document.getElementById('fSdAmount').value,
+        paymentDetails: document.getElementById('fPaymentDetails').value.trim(),
+        sdReleased: b.sdReleased || false,
+        sdReleaseDate: b.sdReleaseDate || '',
+        sdReleaseNotes: b.sdReleaseNotes || '',
+        elecOpen: b.elecOpen || 0,
+        elecClose: b.elecClose || 0,
+        elecCharges: b.elecCharges || 0,
+        inventoryCharges: b.inventoryCharges || 0,
+        inventoryQuantities: b.inventoryQuantities || {}
+      };
+      if(onSlots) record.slot = selectedSlot;
+
+      var previousFloors = isEdit ? bookingFloors(b, ctxFloorId).slice() : [];
+      var toRemoveFrom = previousFloors.filter(function(f){ return record.floors.indexOf(f)===-1; });
+
+      toRemoveFrom.forEach(function(fid){
+        if(state.data[fid] && state.data[fid][iso]){
+          state.data[fid][iso] = state.data[fid][iso].filter(function(x){ return x.id!==record.id; });
+          if(state.data[fid][iso].length===0) delete state.data[fid][iso];
+        }
+      });
+
+      record.floors.forEach(function(fid){
+        if(!state.data[fid]) state.data[fid] = {};
+        if(!state.data[fid][iso]) state.data[fid][iso] = [];
+        var arr = state.data[fid][iso];
+        var idx = arr.findIndex(function(x){ return x.id===record.id; });
+        if(idx>-1) arr[idx] = record; else arr.push(record);
+      });
+
+      var floorsToSave = record.floors.concat(toRemoveFrom).filter(function(v,i,arr){ return arr.indexOf(v)===i; });
+      var wasNew = !isEdit;
+      var results = await Promise.all(floorsToSave.map(saveFloor));
+      var ok = results.every(Boolean);
+      if(ok){
+        renderCalendar();
+        var contextFloor = record.floors.indexOf(ctxFloorId)!==-1 ? ctxFloorId : record.floors[0];
+        if(wasNew) renderReceiptView(iso, contextFloor, record, true); else renderDayView(iso, contextFloor);
+      }
+    };
+  }
+
+  async function handleCancelBooking(iso, floorId, bookingId){
+    if(!confirm('Remove this entry booking logic completely?')) return;
+    FLOORS.forEach(function(f){
+      if(state.data[f.id] && state.data[f.id][iso]){
+        state.data[f.id][iso] = state.data[f.id][iso].filter(function(x){ return x.id!==bookingId; });
+        if(state.data[f.id][iso].length===0) delete state.data[f.id][iso];
+      }
+    });
+    await Promise.all(FLOORS.map(function(f){ return saveFloor(f.id); }));
+    renderCalendar();
+    renderDayView(iso, floorId);
+  }
+
+  // ---------- Overview modal layouts ----------
+  var overlayOv = document.getElementById('overlayOv');
+  var modalOv = document.getElementById('modalOv');
+  var ovState = { tab:'search' };
+  overlayOv.addEventListener('click', function(e){ if(e.target===overlayOv) overlayOv.classList.remove('show'); });
+  document.getElementById('overviewBtn').onclick = function(){ renderOverview(); overlayOv.classList.add('show'); };
+
+  function uniqueBookingsFlat(){
+    var seen = {}; var out = [];
+    FLOORS.forEach(function(f){
+      var floorData = state.data[f.id] || {};
+      Object.keys(floorData).forEach(function(iso){
+        floorData[iso].forEach(function(b){
+          if(!b.id) b.id = genId();
+          if(seen[b.id]) return; seen[b.id] = true;
+          var floors = bookingFloors(b, f.id);
+          out.push({ iso:iso, floorIds:floors, floorLabel: floors.map(function(id){return floorLabel(id);}).join(' + '), b:b });
+        });
+      });
+    });
+    return out;
+  }
+
+  function renderOverview(){
+    modalOv.innerHTML =
+      '<div class="modal-head">'+
+        '<div><p class="modal-date">All floors operations</p><h2 class="modal-title">Overview &amp; search</h2></div>'+
+        '<button class="close-btn" id="ovClose">&times;</button>'+
+      '</div>'+
+      '<div class="tab-row" id="ovTabs">'+
+        '<div class="ov-tab" data-tab="search">Search</div>'+
+        '<div class="ov-tab" data-tab="day">Day view</div>'+
+        '<div class="ov-tab" data-tab="all">All bookings</div>'+
+        '<div class="ov-tab" data-tab="upcoming">Upcoming</div>'+
+        '<div class="ov-tab" data-tab="accounts">Accounts</div>'+
+        '<div class="ov-tab" data-tab="settings">Settings</div>'+
+        '<div class="ov-tab" data-tab="export">Export</div>'+
+      '</div>'+
+      '<div class="ov-panel" id="ovPanel"></div>';
+    document.getElementById('ovClose').onclick = function(){ overlayOv.classList.remove('show'); };
+    document.querySelectorAll('#ovTabs .ov-tab').forEach(function(t){
+      t.onclick = function(){ ovState.tab = t.getAttribute('data-tab'); renderOverviewPanel(); };
+    });
+    renderOverviewPanel();
+  }
+
+  function renderOverviewPanel(){
+    document.querySelectorAll('#ovTabs .ov-tab').forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-tab')===ovState.tab);
+    });
+    var panel = document.getElementById('ovPanel');
+    if(ovState.tab==='search') renderSearchPanel(panel);
+    else if(ovState.tab==='day') renderDayLookupPanel(panel);
+    else if(ovState.tab==='all') renderAllBookingsPanel(panel);
+    else if(ovState.tab==='upcoming') renderUpcomingPanel(panel);
+    else if(ovState.tab==='accounts') renderAccountsPanel(panel);
+    else if(ovState.tab==='settings') renderSettingsPanel(panel);
+    else renderExportPanel(panel);
+  }
+
+  function renderSearchPanel(panel){
+    panel.innerHTML = '<div class="field" style="margin-top:0;"><input type="text" id="ovSearchInput" placeholder="Search entries…"></div><div id="ovResults"></div>';
+    var input = document.getElementById('ovSearchInput');
+    input.addEventListener('input', function(){ renderSearchResults(input.value.trim().toLowerCase()); });
+    renderSearchResults('');
+  }
+
+  function renderSearchResults(query){
+    var resultsEl = document.getElementById('ovResults');
+    var all = uniqueBookingsFlat();
+    var matches = query ? all.filter(function(item){
+      return (item.b.name||'').toLowerCase().indexOf(query)!==-1 || (item.b.mobile||'').indexOf(query)!==-1;
+    }) : [];
+    if(!query){ resultsEl.innerHTML = '<p class="empty-note">Enter parameters search query strings.</p>'; return; }
+    if(matches.length===0){ resultsEl.innerHTML = '<p class="empty-note">No entries recorded match.</p>'; return; }
+    resultsEl.innerHTML = matches.map(function(item){
+      return '<div class="search-result" data-iso="'+item.iso+'" data-floor="'+item.floorIds[0]+'">'+
+        '<div class="sr-left"><div class="n">'+escapeHtml(item.b.name)+'</div><div class="m">'+escapeHtml(item.b.mobile)+'</div></div>'+
+        '<div class="sr-right">'+item.iso+'<br>'+item.floorLabel+'</div>'+
+      '</div>';
+    }).join('');
+    resultsEl.querySelectorAll('.search-result').forEach(function(row){
+      row.onclick = function(){
+        state.currentFloor = row.getAttribute('data-floor');
+        var d = new Date(row.getAttribute('data-iso')+'T00:00:00');
+        state.viewYear = d.getFullYear(); state.viewMonth = d.getMonth();
+        renderFloorTabs(); renderCalendar(); overlayOv.classList.remove('show');
+        openDayModal(row.getAttribute('data-iso'), state.currentFloor);
+      };
+    });
+  }
+
+  function renderDayLookupPanel(panel){
+    panel.innerHTML = '<div class="field" style="margin-top:0;"><label>Choose date</label><input type="date" id="dayLookupInput" value="'+todayIso()+'"></div><div id="dayLookupResults"></div>';
+    document.getElementById('dayLookupInput').addEventListener('input', renderDayLookupResults);
+    renderDayLookupResults();
+  }
+
+  function renderDayLookupResults(){
+    var iso = document.getElementById('dayLookupInput').value;
+    var el = document.getElementById('dayLookupResults'); if(!iso){ el.innerHTML = ''; return; }
+    el.innerHTML = FLOORS.map(function(f){
+      var list = dayBookings(f.id, iso);
+      return '<div style="margin-top:10px;"><b>'+f.label+'</b>:'+(list.length? list.map(function(b){return ' <div>'+escapeHtml(b.name)+' ('+escapeHtml(b.mobile)+')</div>';}).join(''):' Empty')+'</div>';
+    }).join('');
+  }
+
+  function renderAllBookingsPanel(panel){
+    panel.innerHTML = '<div id="allResults"></div>';
+    var all = uniqueBookingsFlat();
+    document.getElementById('allResults').innerHTML = all.map(function(item){
+      return '<div class="booking-card"><b>'+item.iso+'</b> - '+escapeHtml(item.b.name)+' ('+item.floorLabel+')</div>';
+    }).join('');
+  }
+
+  function renderUpcomingPanel(panel){
+    var today = todayIso();
+    var horizon = new Date(); horizon.setDate(horizon.getDate()+30);
+    var horizonIso = isoDate(horizon.getFullYear(), horizon.getMonth(), horizon.getDate());
+    var all = uniqueBookingsFlat().filter(function(item){ return item.iso >= today && item.iso <= horizonIso; });
+    all.sort(function(a,b){ return a.iso.localeCompare(b.iso); });
+    if(all.length===0){ panel.innerHTML = '<p class="empty-note">No bookings in the next 30 days.</p>'; return; }
+    panel.innerHTML = all.map(function(item){
+      var eventLabel = item.b.eventType==='Other' ? (item.b.eventTypeOther||'Other') : item.b.eventType;
+      return '<div class="search-result" data-iso="'+item.iso+'" data-floor="'+item.floorIds[0]+'">'+
+        '<div class="sr-left"><div class="n">'+escapeHtml(item.b.name)+'</div><div class="m">'+escapeHtml(eventLabel||'')+'</div></div>'+
+        '<div class="sr-right">'+fmtDateLabel(item.iso).split(',').slice(0,2).join(',')+'<br>'+item.floorLabel+(slotLabelOf(item.b)?' · '+slotLabelOf(item.b):'')+'</div>'+
+      '</div>';
+    }).join('');
+    panel.querySelectorAll('.search-result').forEach(function(row){
+      row.onclick = function(){
+        state.currentFloor = row.getAttribute('data-floor');
+        var d = new Date(row.getAttribute('data-iso')+'T00:00:00');
+        state.viewYear = d.getFullYear(); state.viewMonth = d.getMonth();
+        renderFloorTabs(); renderCalendar(); overlayOv.classList.remove('show');
+        openDayModal(row.getAttribute('data-iso'), state.currentFloor);
+      };
+    });
+  }
+
+  function renderAccountsPanel(panel){
+    var all = uniqueBookingsFlat(); var total = 0;
+    all.forEach(function(x){ total += num(x.b.amountPaid); });
+    panel.innerHTML = '<div class="acct-hero"><p class="lbl">Aggregate Realized Bookings Turnover</p><p class="num">'+money(total)+'</p></div>';
+  }
+
+  function renderExportPanel(panel){
+    panel.innerHTML = '<button class="btn primary block" id="exportBtn">Trigger CSV Register Retrieval</button>';
+    document.getElementById('exportBtn').onclick = downloadCsv;
+  }
+
+  function downloadCsv(){
+    var csv = "Floor,Date,Name,Mobile,Amount Paid\n" + uniqueBookingsFlat().map(function(x){
+      return x.floorLabel + "," + x.iso + "," + x.b.name + "," + x.b.mobile + "," + x.b.amountPaid;
+    }).join("\n");
+    var blob = new Blob([csv], {type:'text/csv'});
+    var link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'register.csv'; link.click();
+  }
+
+  // ---------- Settings Page Module ----------
+  function renderSettingsPanel(panel){
+    var on = slotsOn();
+    var pkgTwo = (state.settings && state.settings.packageTwoFloorsDeposit) || '5000';
+    var pkgThree = (state.settings && state.settings.packageThreeFloorsDeposit) || '5000';
+    var eRate = (state.settings && state.settings.elecRate) || '10';
+    var inventoryItems = (state.settings && state.settings.inventoryItems) || [];
+
+    var itemsRowsHtml = inventoryItems.map(function(item, index){
+      return '<div class="row2 curr-inv-row" style="margin-top:6px;">' +
+               '<input type="text" class="set-inv-name" value="' + attr(item.name) + '" placeholder="Item Name">' +
+               '<input type="number" class="set-inv-rate" value="' + attr(item.rate) + '" placeholder="Rate / basis pc">' +
+             '</div>';
+    }).join('');
+
+    panel.innerHTML =
+      '<div class="booking-card" style="margin-top:0;">'+
+        '<label style="display:flex;align-items:center;gap:10px;cursor:pointer;">'+
+          '<input type="checkbox" id="setSlotsEnabled" '+(on?'checked':'')+' style="width:18px;height:18px;accent-color:var(--teal);">'+
+          '<span><b>Enable Morning / Evening Split Slot Matrix System</b></span>'+
+        '</label>'+
+      '</div>'+
+
+      '<div class="booking-card" style="margin-top:10px; border-left: 4px solid var(--gold);">'+
+        '<p class="bc-name" style="margin:0 0 4px;">Multi-Floor Package Deposits Configurations</p>'+
+        '<div class="row2">'+
+          '<div class="field" style="margin-top:0;"><label>Any Two Floors Combined Deposit (₹)</label><input type="number" id="setPkgTwoDeposit" value="'+attr(pkgTwo)+'"></div>'+
+          '<div class="field" style="margin-top:0;"><label>All Three Floors Combined Deposit (₹)</label><input type="number" id="setPkgThreeDeposit" value="'+attr(pkgThree)+'"></div>'+
+        '</div>'+
+      '</div>'+
+
+      ''+
+      '<div class="booking-card" style="margin-top:10px; border-left: 4px solid var(--teal);">'+
+        '<p class="bc-name" style="margin:0 0 4px;">Utility Matrix Parameters</p>'+
+        '<div class="field" style="margin-top:0;"><label>Electricity Energy Charge Rate (₹ per Unit consumed)</label><input type="number" id="setElecRate" value="'+attr(eRate)+'"></div>'+
+      '</div>'+
+
+      ''+
+      '<div class="booking-card" style="margin-top:10px; border-left: 4px solid var(--green);">'+
+        '<p class="bc-name" style="margin:0 0 4px;">Inventory Logistic Rental Resource Rates</p>'+
+        '<div id="invConfigContainer">' + itemsRowsHtml + '</div>'+
+        '<button class="btn ghost block" id="addInvRowBtn" style="margin-top:10px; min-height:34px; padding:4px;">+ Add Rental Logistics Resource Class</button>'+
+      '</div>'+
+
+      FLOORS.map(function(f){
+        var s = state.settings[f.id] || {};
+        return '<div class="booking-card" style="margin-top:10px;">'+
+          '<p class="bc-name" style="margin:0 0 8px;">'+f.label+' Basic Multipliers</p>'+
+          '<div class="row2">'+
+            '<div class="field" style="margin-top:0;"><label id="lbl-fullDay-'+f.id+'">'+(on?'Full day':'Standard Charge')+' (₹)</label><input type="number" id="set-'+f.id+'-fullDay" value="'+attr(s.fullDay)+'"></div>'+
+            '<div class="field" id="halfDayWrap-'+f.id+'" style="margin-top:0;'+(on?'':'display:none;')+'"><label>Half day (₹)</label><input type="number" id="set-'+f.id+'-halfDay" value="'+attr(s.halfDay)+'"></div>'+
+          '</div>'+
+          '<div class="row2" style="margin-top:10px;">'+
+            '<div class="field" style="margin-top:0;"><label>Cleaning Charge (₹)</label><input type="number" id="set-'+f.id+'-cleaning" value="'+attr(s.cleaning)+'"></div>'+
+            '<div class="field" style="margin-top:0;"><label>Single Isolated Deposit (₹)</label><input type="number" id="set-'+f.id+'-deposit" value="'+attr(s.deposit)+'"></div>'+
+          '</div>'+
+        '</div>';
+      }).join('')+
+      '<button class="btn primary block" id="saveSettingsBtn">Commit Matrix Configurations</button>';
+
+    document.getElementById('setSlotsEnabled').onchange = function(){
+      var checked = this.checked;
+      FLOORS.forEach(function(f){
+        document.getElementById('halfDayWrap-'+f.id).style.display = checked ? '' : 'none';
+        document.getElementById('lbl-fullDay-'+f.id).textContent = checked ? 'Full day (₹)' : 'Standard Charge (₹)';
+      });
+    };
+
+    document.getElementById('addInvRowBtn').onclick = function() {
+      var entry = document.createElement('div');
+      entry.className = 'row2 curr-inv-row';
+      entry.style.marginTop = '6px';
+      entry.innerHTML = '<input type="text" class="set-inv-name" placeholder="Item Name"><input type="number" class="set-inv-rate" placeholder="Rate">';
+      document.getElementById('invConfigContainer').appendChild(entry);
+    };
+
+    document.getElementById('saveSettingsBtn').onclick = async function(){
+      var finalInvArr = [];
+      document.querySelectorAll('.curr-inv-row').forEach(function(row){
+        var n = row.querySelector('.set-inv-name').value.trim();
+        var r = row.querySelector('.set-inv-rate').value.trim();
+        if(n && r) finalInvArr.push({ name: n, rate: r });
+      });
+
+      var newSettings = { 
+        slotsEnabled: document.getElementById('setSlotsEnabled').checked,
+        packageTwoFloorsDeposit: document.getElementById('setPkgTwoDeposit').value.trim(),
+        packageThreeFloorsDeposit: document.getElementById('setPkgThreeDeposit').value.trim(),
+        elecRate: document.getElementById('setElecRate').value.trim(),
+        inventoryItems: finalInvArr
+      };
+      
+      FLOORS.forEach(function(f){
+        newSettings[f.id] = {
+          fullDay: document.getElementById('set-'+f.id+'-fullDay').value.trim(),
+          halfDay: on ? document.getElementById('set-'+f.id+'-halfDay').value.trim() : '',
+          cleaning: document.getElementById('set-'+f.id+'-cleaning').value.trim(),
+          deposit: document.getElementById('set-'+f.id+'-deposit').value.trim()
+        };
+      });
+      
+      var btn = document.getElementById('saveSettingsBtn'); btn.textContent = 'Saving…';
+      var ok = await saveSettings(newSettings); btn.textContent = ok ? 'Saved ✓' : 'Save settings';
+      if(ok){ renderCalendar(); setTimeout(function(){ btn.textContent='Commit Matrix Configurations'; }, 1500); }
+    };
+  }
+
+  // ---------- Nav operations ----------
+  document.getElementById('prevBtn').onclick = function(){
+    state.viewMonth--; if(state.viewMonth<0){ state.viewMonth=11; state.viewYear--; } renderCalendar();
+  };
+  document.getElementById('nextBtn').onclick = function(){
+    state.viewMonth++; if(state.viewMonth>11){ state.viewMonth=0; state.viewYear++; } renderCalendar();
+  };
+  document.getElementById('todayBtn').onclick = function(){
+    var t = new Date(); state.viewYear = t.getFullYear(); state.viewMonth = t.getMonth(); renderCalendar();
+  };
+
+  // ---------- Auth gate ----------
+  var loginScreen = document.getElementById('loginScreen');
+  var appRoot = document.getElementById('appRoot');
+  var loginErr = document.getElementById('loginErr');
+  var appStarted = false;
+
+  function showLogin(message){
+    appRoot.style.display = 'none'; loginScreen.style.display = 'flex';
+    if(message){ loginErr.textContent = message; loginErr.style.display = 'block'; } else { loginErr.style.display = 'none'; }
+  }
+
+  function startApp(){
+    loginScreen.style.display = 'none'; appRoot.style.display = 'block';
+    if(appStarted) return; appStarted = true;
+    renderFloorTabs(); renderWeekdays(); renderCalendar();
+    Promise.all([loadAll(), loadSettings()]).then(renderCalendar);
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var email = document.getElementById('loginEmail').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    if(!email || !password) return;
+    auth.signInWithEmailAndPassword(email, password).catch(function(err){
+      loginErr.textContent = err.message; loginErr.style.display = 'block';
+    });
+  });
+
+  document.getElementById('logoutBtn').onclick = function(){ auth.signOut(); };
+  auth.onAuthStateChanged(function(user){ if(user){ startApp(); } else { showLogin(); } });
+
+})();
+function genId(){ return 'b'+Date.now()+Math.random().toString(36).slice(2,7); }
+</script>
+</body>
+</html>
